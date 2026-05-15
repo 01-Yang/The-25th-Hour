@@ -1,0 +1,838 @@
+# 题库总表
+
+本文件统一维护大学课程题库与雅思题库。
+
+## 使用规则
+
+- 大学课程共 10 门。
+- 每门课程固定 10 道单选题。
+- 每学期选定课程后，从对应课程题库中随机抽取 3 道题。
+- 课程题答对 2 题：该学期 GPA 修正 `+0.2`。
+- 课程题答对 1 题：该学期 GPA 修正 `+0.1`。
+- 课程题答对 0 题：该学期 GPA 修正 `-0.2`。
+- 课程题与雅思题都采用即时反馈：
+  - 玩家答对后，明确显示答对。
+  - 玩家答错后，明确显示正确答案。
+- 雅思考试每年可考 1 次。
+- 雅思题库总量为 30 道英文单选题。
+- 每次雅思考试从 30 道题中抽取 15 道作答。
+
+## 大学课程题库 V1
+
+### 建筑史论
+
+1. “少即是多”最常关联哪位建筑师？
+   A. 勒·柯布西耶
+   B. 密斯·凡·德·罗
+   C. 阿尔托
+   D. 路易斯·康
+   答案：`B`
+2. 萨伏伊别墅最常被视为哪一建筑思想的代表？
+   A. 现代主义
+   B. 哥特复兴
+   C. 解构主义
+   D. 后现代主义
+   答案：`A`
+3. 包豪斯的核心气质更接近：
+   A. 装饰优先
+   B. 艺术、工艺与工业结合
+   C. 历史复古
+   D. 手工排斥机器
+   答案：`B`
+4. 金贝尔美术馆的建筑师是：
+   A. 路易斯·康
+   B. 贝聿铭
+   C. 扎哈
+   D. SANAA
+   答案：`A`
+5. “形式追随功能”最常关联：
+   A. 罗伯特·文丘里
+   B. 路易斯·沙利文
+   C. 阿尔多·罗西
+   D. 阿道夫·路斯
+   答案：`B`
+6. 苏州博物馆新馆最常关联哪位建筑师？
+   A. 王澍
+   B. 贝聿铭
+   C. 隈研吾
+   D. 安藤忠雄
+   答案：`B`
+7. 朗香教堂的设计者是：
+   A. 勒·柯布西耶
+   B. 密斯·凡·德·罗
+   C. 路易斯·康
+   D. 诺曼·福斯特
+   答案：`A`
+8. 巴塞罗那德国馆的设计者是：
+   A. 密斯·凡·德·罗
+   B. 格罗皮乌斯
+   C. 赖特
+   D. 安藤忠雄
+   答案：`A`
+9. 流水别墅体现了赖特哪一核心思想？
+   A. 解构
+   B. 有机建筑
+   C. 高技派
+   D. 纪念性轴线
+   答案：`B`
+10. 后现代主义建筑理论在很大程度上是对哪一倾向的反思？
+   A. 严格现代主义
+   B. 古典主义
+   C. 地域主义
+   D. 结构主义
+   答案：`A`
+
+### 建筑构造
+
+1. 倒置式屋面的构造特征是：
+   A. 保温层设于防水层上部
+   B. 保温层设于结构层下部
+   C. 防水层设于保温层上部
+   D. 找坡层设于保护层上部
+   答案：`A`
+2. 严寒地区外墙采用外保温体系最主要的技术优势是：
+   A. 便于室内装修
+   B. 降低热桥影响并改善热稳定性
+   C. 增加室内净高
+   D. 减少基础荷载
+   答案：`B`
+3. 建筑伸缩缝设置的首要目的是解决：
+   A. 地基不均匀沉降
+   B. 温度变形
+   C. 风荷载过大
+   D. 材料成本过高
+   答案：`B`
+4. 窗台泛水构造的主要作用是：
+   A. 强化立面分格
+   B. 防止雨水倒灌和污染墙面
+   C. 增加窗框刚度
+   D. 提高采光系数
+   答案：`B`
+5. 幕墙与主体结构连接节点设计时，除传力可靠外，还应重点满足：
+   A. 立面均匀
+   B. 允许温度变形和层间位移
+   C. 增加幕墙厚度
+   D. 降低层高
+   答案：`B`
+6. 在室内湿度较大的建筑中设置隔气层的主要原因是：
+   A. 防止保温材料受机械损伤
+   B. 防止水蒸气进入保温层结露
+   C. 提高防火等级
+   D. 方便施工放线
+   答案：`B`
+7. 沉降缝主要用于解决：
+   A. 屋面排水问题
+   B. 结构温度变形
+   C. 地基不均匀沉降
+   D. 立面色彩分区
+   答案：`C`
+8. 地下室防水设计中，防水等级提高时最先强化的通常是：
+   A. 门窗数量
+   B. 构造连续性与节点处理
+   C. 装饰层厚度
+   D. 天花高度
+   答案：`B`
+9. 平屋顶有组织排水通常意味着：
+   A. 雨水自由散排
+   B. 通过天沟、檐沟和雨水口集中排走
+   C. 不做找坡
+   D. 只适用于坡屋顶
+   答案：`B`
+10. 外窗洞口处设置过梁的主要结构作用是：
+   A. 控制窗扇开启
+   B. 承担洞口上部墙体荷载并传递到两侧墙体
+   C. 防止玻璃破裂
+   D. 统一立面比例
+   答案：`B`
+
+### 数字规划
+
+1. 在复杂地形场地的数字分析中，最基础的底层数据通常是：
+   A. DEM 数字高程模型
+   B. 渲染贴图
+   C. 剖面详图
+   D. 立面分格图
+   答案：`A`
+2. 空间句法中的“整合度”主要用于描述：
+   A. 材料耐久性
+   B. 空间在整体系统中的可达性与中心性
+   C. 建筑体量大小
+   D. 结构受力大小
+   答案：`B`
+3. 参数化设计中，几何对象能够随条件同步变化的核心在于建立：
+   A. 视图关系
+   B. 参数与约束关系
+   C. 手绘底图
+   D. 效果图模板
+   答案：`B`
+4. 建筑日照模拟在方案前期最直接服务于：
+   A. 汇报风格选择
+   B. 体量、朝向和间距控制
+   C. 室内家具布置
+   D. 结构柱网设计
+   答案：`B`
+5. 多个方案同时比较容积率、日照、风环境和视线质量时，最适合的方法是：
+   A. 单指标判断
+   B. 多指标加权评价
+   C. 只看效果图
+   D. 只看总平面
+   答案：`B`
+6. 相比纯几何模型，BIM 模型的核心优势是：
+   A. 模型一定更轻
+   B. 构件信息可联动管理
+   C. 渲染一定更快
+   D. 一定更适合自由曲面
+   答案：`B`
+7. GIS 在前期规划研究中的典型作用是：
+   A. 替代建筑设计
+   B. 叠加分析地块与城市多源信息
+   C. 替代结构计算
+   D. 替代口头汇报
+   答案：`B`
+8. 建筑风环境数字模拟最常借助：
+   A. CFD 分析
+   B. PS 调色
+   C. 手绘草图
+   D. 轴测爆炸图
+   答案：`A`
+9. 服务半径分析最常用于判断：
+   A. 结构体系合理性
+   B. 公共设施覆盖效率
+   C. 材料热工性能
+   D. 图面表达完整度
+   答案：`B`
+10. 如果数字分析图很复杂却无法反推设计决策，最大问题通常是：
+   A. 颜色不够高级
+   B. 图纸缺乏逻辑闭环
+   C. 场地太小
+   D. 模型不够精细
+   答案：`B`
+
+### 计算机辅助设计
+
+1. NURBS 建模相较多边形建模更适合：
+   A. 精确控制连续曲面
+   B. 表达结构受力
+   C. 生成工程造价
+   D. 统计容积率
+   答案：`A`
+2. CAD 制图中分层管理墙体、轴网、尺寸和文字的主要目的是：
+   A. 增大文件体积
+   B. 便于编辑、显示与输出控制
+   C. 提高渲染质量
+   D. 替代设计逻辑
+   答案：`B`
+3. 对于重复出现且可能统一修改的构件，最合理的处理方式是：
+   A. 每次重画
+   B. 建立块或族对象
+   C. 直接截图复制
+   D. 并入文字层
+   答案：`B`
+4. 实体建模相较曲面建模的优势之一是：
+   A. 更便于表达体积逻辑和布尔运算
+   B. 更适合所有自由曲面
+   C. 文件一定更小
+   D. 不需要单位控制
+   答案：`A`
+5. 模型输出给激光切割或 CNC 前最先应检查的是：
+   A. 贴图质量
+   B. 曲线闭合与单位比例
+   C. 标题大小
+   D. 视角设置
+   答案：`B`
+6. “过度建模”在建院工作流中的主要问题是：
+   A. 一定更成熟
+   B. 局部精度过高但整体表达效率下降
+   C. 会自动降低分数
+   D. 不能导出图纸
+   答案：`B`
+7. 跨软件协同时最容易引发尺寸错误的问题是：
+   A. 模型颜色不统一
+   B. 单位设置不一致
+   C. 透视角度不同
+   D. 标题命名不同
+   答案：`B`
+8. 在 CAD 出图中，线宽控制最常通过什么实现：
+   A. 字体样式
+   B. 打印样式表
+   C. 视口比例
+   D. 图框模板
+   答案：`B`
+9. 参照模型链接的核心价值是：
+   A. 增加渲染精度
+   B. 保持多文件协同更新
+   C. 替代总图控制
+   D. 让模型更有质感
+   答案：`B`
+10. 在建筑数字工作流中，矢量图形相对位图的最大优势之一是：
+   A. 更适合像素渲染
+   B. 可无损缩放并保持线性精度
+   C. 一定更占内存
+   D. 更适合全部效果图
+   答案：`B`
+
+### 建筑力学
+
+1. 简支梁在跨中承受集中荷载时，最大弯矩出现在：
+   A. 支座处
+   B. 四分点处
+   C. 跨中
+   D. 任意位置相同
+   答案：`C`
+2. 构件抗弯刚度与下列哪项关系最直接：
+   A. 截面惯性矩
+   B. 立面材质
+   C. 门窗比例
+   D. 建筑朝向
+   答案：`A`
+3. 在高层建筑中，剪力墙最主要的结构作用是：
+   A. 承担防水
+   B. 抵抗水平荷载
+   C. 组织交通
+   D. 强化采光
+   答案：`B`
+4. 轴心受压构件的稳定性随着长细比增大通常会：
+   A. 提高
+   B. 不变
+   C. 降低
+   D. 先升后降
+   答案：`C`
+5. 拱结构与梁结构相比，其受力特点之一是：
+   A. 支座无水平推力
+   B. 主要通过受拉工作
+   C. 支座会产生水平推力
+   D. 不受几何形态影响
+   答案：`C`
+6. 超静定结构的内力不能仅由平衡方程确定，还必须结合：
+   A. 建筑风格
+   B. 变形协调条件
+   C. 配色方案
+   D. 采光标准
+   答案：`B`
+7. 悬臂梁在自由端受集中荷载时，最大弯矩出现在：
+   A. 自由端
+   B. 跨中
+   C. 固定端
+   D. 任意位置相等
+   答案：`C`
+8. 理想铰接桁架杆件的主要受力形式是：
+   A. 轴力
+   B. 弯矩
+   C. 扭矩
+   D. 剪力
+   答案：`A`
+9. 对框架结构抗侧刚度影响最直接的因素之一是：
+   A. 柱高与梁柱线刚度比
+   B. 窗台高度
+   C. 立面色彩
+   D. 图纸比例
+   答案：`A`
+10. 在结构概念设计中，“受力路径清晰”通常意味着：
+   A. 形式越复杂越好
+   B. 荷载传递逻辑明确且连续
+   C. 结构件越多越安全
+   D. 支撑构件可以后加
+   答案：`B`
+
+### 建筑表现基础
+
+1. 轴测图相较透视图，在建筑表达中的突出优势是：
+   A. 更接近真实视感
+   B. 可兼顾空间展示与尺度可读性
+   C. 更适合表现大气透视
+   D. 一定更适合评图
+   答案：`B`
+2. 在效果图中，决定建筑体量识别度的首要因素通常是：
+   A. 植物种类
+   B. 主光源方向与明暗关系
+   C. 标题字体
+   D. 渲染时间
+   答案：`B`
+3. 建筑分析图最核心的专业要求是：
+   A. 色彩丰富
+   B. 单张图只服务一个明确逻辑
+   C. 页面尽量铺满
+   D. 信息越多越好
+   答案：`B`
+4. 爆炸轴测图最适合表达：
+   A. 场地边界
+   B. 构造层次与系统关系
+   C. 视线廊道
+   D. 人流统计
+   答案：`B`
+5. 一张评图板“图很多但重点不明”的根本问题通常是：
+   A. 缺少统一色调
+   B. 信息层级失控
+   C. 图纸数量不足
+   D. 缺少人物尺度
+   答案：`B`
+6. 剖透视图在建筑表现中最适合同时呈现：
+   A. 造价与指标
+   B. 内部空间、界面构造和光线关系
+   C. 单纯立面风格
+   D. 纯结构受力
+   答案：`B`
+7. 在色彩学中，暖色相较冷色更容易产生的视觉感受是：
+   A. 后退、疏离
+   B. 前进、膨胀
+   C. 中性、平静
+   D. 收缩、压低
+   答案：`B`
+8. 当建筑分析板需要突出主要流线时，更合适的做法通常是：
+   A. 所有颜色同等饱和
+   B. 使用有限高对比色突出主信息
+   C. 所有图统一灰度
+   D. 只加大标题字号
+   答案：`B`
+9. 在配色中，互补色关系最适合强化：
+   A. 构件尺寸
+   B. 视觉对比与重点提示
+   C. 结构稳定性
+   D. 打印精度
+   答案：`B`
+10. 如果一张板面整体饱和度过高，最常见的问题是：
+   A. 信息主次不清，视觉疲劳增强
+   B. 空间关系更清晰
+   C. 图纸一定更专业
+   D. 更适合技术图表达
+   答案：`A`
+
+### 建筑制图
+
+1. 在建筑平面图中，被剖切到的墙体轮廓线通常应画为：
+   A. 细实线
+   B. 中粗虚线
+   C. 粗实线
+   D. 点划线
+   答案：`C`
+2. 建筑制图中定位轴线编号的一般原则是：
+   A. 两方向都用数字
+   B. 一方向数字，一方向字母
+   C. 全部用拼音
+   D. 只标主要轴线
+   答案：`B`
+3. 剖面图中的标高标注主要用于表达：
+   A. 外墙颜色
+   B. 竖向空间与构件的高程关系
+   C. 透视深度
+   D. 人流路线
+   答案：`B`
+4. 总平面图中判断建筑朝向最直接的依据是：
+   A. 图名
+   B. 比例尺
+   C. 指北针
+   D. 图框位置
+   答案：`C`
+5. 当平面图与剖面图中同一洞口高度不一致时，最准确的判断是：
+   A. 平面图一定对
+   B. 剖面图一定对
+   C. 图纸尚未建立对应关系
+   D. 只改标注即可
+   答案：`C`
+6. 详图索引符号的主要作用是：
+   A. 统一字体风格
+   B. 建立平立剖与节点详图的对应关系
+   C. 增强装饰性
+   D. 区分风格流派
+   答案：`B`
+7. 剖切位置线两端箭头的主要作用是：
+   A. 指示剖视方向
+   B. 表示结构受力
+   C. 表示轴线方向
+   D. 表示日照方向
+   答案：`A`
+8. 建筑尺寸标注中，最基本的原则之一是：
+   A. 同一尺寸可重复多次
+   B. 标注应完整且避免不必要重复
+   C. 只标总尺寸不标细部
+   D. 文字越小越专业
+   答案：`B`
+9. 在总平面图中，红线最主要表示：
+   A. 建筑立面控制线
+   B. 用地边界或规划控制界线
+   C. 结构网格线
+   D. 消防扑救面
+   答案：`B`
+10. 比例尺选择的基本原则是：
+   A. 越大越好
+   B. 与表达内容和图幅需求相匹配
+   C. 所有图统一一个比例
+   D. 只按老师习惯选择
+   答案：`B`
+
+### 表达与汇报
+
+1. 建筑设计汇报中较为有效的叙述顺序通常是：
+   A. 效果图-结论-场地-功能
+   B. 场地问题-设计策略-空间组织-技术回应
+   C. 材料-造价-导师评价-立面
+   D. 标题-目录-致谢-总结
+   答案：`B`
+2. 当老师质疑方案“概念成立但功能失真”时，最有效的回应方式是：
+   A. 重复概念关键词
+   B. 回到平面和剖面说明功能与空间逻辑
+   C. 强调自己熬夜很多
+   D. 转而讨论效果图氛围
+   答案：`B`
+3. 中期汇报与终期答辩最大的区别之一在于：
+   A. 前者不需要图纸
+   B. 前者重策略与推进，后者重完整性与落地度
+   C. 后者不需要概念
+   D. 二者没有区别
+   答案：`B`
+4. 在评图追问中最容易失分的行为是：
+   A. 结合图纸回答
+   B. 承认局部待深化
+   C. 脱离图纸空谈抽象概念
+   D. 先明确问题对象
+   答案：`C`
+5. 一张汇报板上的分析图、平面、剖面、效果图之间理想关系应是：
+   A. 各自独立
+   B. 共同服务同一核心论点
+   C. 只保留最漂亮的图
+   D. 只由版式决定
+   答案：`B`
+6. 当方案有明显优点但存在关键漏洞时，优秀汇报通常会：
+   A. 回避漏洞
+   B. 只强调优点
+   C. 主动承认边界并说明修正路径
+   D. 把问题推给导师
+   答案：`C`
+7. 在评图口头表达中，“结论先行”的主要价值是：
+   A. 增加时间
+   B. 帮助评委迅速把握主论点
+   C. 替代图纸
+   D. 避免追问
+   答案：`B`
+8. 如果老师连续追问同一问题，通常说明：
+   A. 老师心情不好
+   B. 方案关键逻辑仍不自洽
+   C. PPT 翻页太慢
+   D. 板式不够高级
+   答案：`B`
+9. 在建筑汇报中，效果图最合理的角色是：
+   A. 替代平剖面
+   B. 作为论证空间氛围的辅助证据
+   C. 替代概念说明
+   D. 直接决定方案成败
+   答案：`B`
+10. 面对与自己预设完全不同的评图意见，更成熟的处理方式是：
+   A. 立刻否定老师
+   B. 只强调个人审美
+   C. 先理解问题落点，再回应设计依据
+   D. 结束汇报
+   答案：`C`
+
+### 建筑美学
+
+1. 萨伏伊别墅最能概括其空间组织特征的关键词是：
+   A. 轴线纪念性
+   B. 自由平面与漫游式动线
+   C. 厚重围合庭院
+   D. 装饰性立面拼贴
+   答案：`B`
+2. 路易斯·康在建筑设计中常强调的核心观念之一是：
+   A. 装饰优先
+   B. 服务空间与被服务空间
+   C. 结构完全隐藏
+   D. 形式先于材料
+   答案：`B`
+3. 密斯“通用空间”思想最典型的特征之一是：
+   A. 强分隔小房间
+   B. 大跨度、开敞、自由分隔
+   C. 强烈地域符号
+   D. 非理性曲面为主
+   答案：`B`
+4. 阿尔瓦罗·阿尔托的建筑美学通常被认为在现代主义中更强调：
+   A. 机械纪念性
+   B. 人性尺度与材料温度
+   C. 极端装饰拼贴
+   D. 纯粹技术炫耀
+   答案：`B`
+5. 安藤忠雄作品中最具辨识度的设计语言之一是：
+   A. 金属高技外露
+   B. 清水混凝土与光的控制
+   C. 彩色拼贴立面
+   D. 古典柱式复兴
+   答案：`B`
+6. 阿尔多·罗西的建筑思想常围绕：
+   A. 流体空间
+   B. 类型学与城市记忆
+   C. 参数化几何
+   D. 高技结构表现
+   答案：`B`
+7. 弗兰克·劳埃德·赖特“有机建筑”最核心的倾向是：
+   A. 建筑与场地环境相互生成
+   B. 建筑完全独立于地形
+   C. 装饰先于功能
+   D. 技术先于空间
+   答案：`A`
+8. 文丘里在《建筑的复杂性与矛盾性》中主要反对的是：
+   A. 结构逻辑
+   B. 过度单一化和纯粹化的现代主义表达
+   C. 城市历史
+   D. 材料细部
+   答案：`B`
+9. 卡洛·斯卡帕在设计中最突出的美学特征之一是：
+   A. 忽略细部
+   B. 极端标准化
+   C. 精密节点与材料接合的诗性处理
+   D. 纯体量先行
+   答案：`C`
+10. 如果说萨伏伊别墅最有代表性的“建筑美学贡献”之一是什么，更合理的回答是：
+   A. 展现现代建筑在结构、流线和空间自由上的综合表达
+   B. 发明钢结构高层
+   C. 首次提出后现代主义
+   D. 完全否定场地关系
+   答案：`A`
+
+### 园林史论
+
+1. 中国古典园林中“虽由人作，宛自天开”最能概括哪一核心审美追求？
+   A. 轴线绝对对称
+   B. 人工营造中的自然意趣
+   C. 纪念性尺度优先
+   D. 几何秩序先于山水
+   答案：`B`
+2. 颐和园的主体建成与定型主要对应中国哪个朝代？
+   A. 唐
+   B. 宋
+   C. 明
+   D. 清
+   答案：`D`
+3. 拙政园通常被视为哪一类型中国古典园林的代表？
+   A. 皇家园林
+   B. 私家园林
+   C. 寺观园林
+   D. 陵寝园林
+   答案：`B`
+4. 中国园林空间组织中“借景”主要强调：
+   A. 完全封闭内部视线
+   B. 将园外景物纳入园内观赏体系
+   C. 用镜面放大景深
+   D. 通过轴线强化纪念性
+   答案：`B`
+5. 计成《园冶》在中国园林史上的重要意义之一是：
+   A. 首次系统总结造园理论与技法
+   B. 首次提出现代城市公园概念
+   C. 首次引入法式园林
+   D. 首次采用钢筋混凝土筑园
+   答案：`A`
+6. 凡尔赛宫花园最典型体现的是哪种园林特征？
+   A. 自然式山水布局
+   B. 几何秩序与绝对轴线控制
+   C. 小尺度文人园趣
+   D. 曲折回游空间
+   答案：`B`
+7. 英国风景式园林相较法式古典园林，最突出的差异在于：
+   A. 更强调几何轴线
+   B. 更强调自然化地形与景观
+   C. 更强调宫廷仪式空间
+   D. 更强调密集雕塑矩阵
+   答案：`B`
+8. 苏州留园在空间处理上最突出的特点之一是：
+   A. 巨大中央草坪
+   B. 建筑、院落、廊道与假山复合穿插
+   C. 强烈放射形道路
+   D. 纯对称水池布局
+   答案：`B`
+9. 日本枯山水庭园最典型的构成元素之一是：
+   A. 大面积草坪
+   B. 砂纹与置石
+   C. 对称花坛
+   D. 巨型喷泉
+   答案：`B`
+10. 中国皇家园林与江南私家园林相比，通常更强调：
+   A. 小中见大与精微转折
+   B. 宏大尺度与政治象征
+   C. 极简抽象几何
+   D. 工业景观表达
+   答案：`B`
+
+## 雅思题库 V1
+
+### 建筑史论与建筑史观 15 题
+
+1. Who is the architect of the Kimbell Art Museum?
+   A. Louis Kahn
+   B. I. M. Pei
+   C. Zaha Hadid
+   D. SANAA
+   Answer: `A`
+2. Villa Savoye is most commonly associated with which architectural movement?
+   A. Modernism
+   B. Gothic Revival
+   C. Postmodernism
+   D. Expressionism
+   Answer: `A`
+3. The phrase “Less is more” is most closely associated with:
+   A. Frank Lloyd Wright
+   B. Mies van der Rohe
+   C. Alvar Aalto
+   D. Peter Eisenman
+   Answer: `B`
+4. The Barcelona Pavilion was designed by:
+   A. Le Corbusier
+   B. Mies van der Rohe
+   C. Louis Sullivan
+   D. Tadao Ando
+   Answer: `B`
+5. The Church of the Light is a representative work of:
+   A. Tadao Ando
+   B. Kenzo Tange
+   C. Toyo Ito
+   D. Kengo Kuma
+   Answer: `A`
+6. The Five Points of a New Architecture were proposed by:
+   A. Walter Gropius
+   B. Le Corbusier
+   C. Aldo Rossi
+   D. Rem Koolhaas
+   Answer: `B`
+7. Fallingwater was designed by:
+   A. Frank Lloyd Wright
+   B. Richard Meier
+   C. Philip Johnson
+   D. Renzo Piano
+   Answer: `A`
+8. The Pompidou Centre is associated with:
+   A. Renzo Piano and Richard Rogers
+   B. Louis Kahn and I. M. Pei
+   C. Mies and Johnson
+   D. SANAA and Sejima
+   Answer: `A`
+9. Which building is a representative work of Alvar Aalto?
+   A. Paimio Sanatorium
+   B. Seagram Building
+   C. Villa Savoye
+   D. Sydney Opera House
+   Answer: `A`
+10. Ronchamp Chapel was designed by:
+    A. Le Corbusier
+    B. Carlo Scarpa
+    C. Oscar Niemeyer
+    D. SOM
+    Answer: `A`
+11. The Bauhaus emphasized the unity of:
+    A. ornament and symbolism
+    B. art, craft, and industry
+    C. history and nostalgia
+    D. monument and axis
+    Answer: `B`
+12. Seagram Building is primarily associated with:
+    A. Brutalism
+    B. International Style
+    C. Metabolism
+    D. Regionalism
+    Answer: `B`
+13. Postmodernism in architecture is often understood as a critique of:
+    A. Gothic architecture
+    B. strict Modernist reduction
+    C. vernacular building
+    D. industrial production
+    Answer: `B`
+14. The Guggenheim Museum Bilbao was designed by:
+    A. Frank Gehry
+    B. Daniel Libeskind
+    C. Norman Foster
+    D. Louis Kahn
+    Answer: `A`
+15. In architectural history, “form follows function” is most closely linked to:
+    A. Louis Sullivan
+    B. Robert Venturi
+    C. Aldo Rossi
+    D. Adolf Loos
+    Answer: `A`
+
+### 建筑学核心课程 15 题
+
+16. In an inverted roof, the insulation layer is placed:
+    A. below the structure
+    B. above the waterproof layer
+    C. below the ceiling
+    D. above the parapet
+    Answer: `B`
+17. External wall insulation is preferred to internal insulation mainly because it:
+    A. reduces thermal bridges
+    B. lowers structural load
+    C. replaces waterproofing
+    D. increases floor height
+    Answer: `A`
+18. In architectural drawing, a section is mainly used to show:
+    A. only facade color
+    B. internal spatial and vertical relationships
+    C. only site boundary
+    D. only roof drainage
+    Answer: `B`
+19. In CAD drafting, layer management is primarily used to:
+    A. improve editing and output control
+    B. increase rendering quality
+    C. replace dimensions
+    D. reduce design revisions
+    Answer: `A`
+20. A block or family is most useful when:
+    A. a component appears repeatedly and may need unified revision
+    B. a model is printed in color
+    C. a site is too small
+    D. a roof is sloped
+    Answer: `A`
+21. In structural mechanics, the maximum bending moment of a simply supported beam with a mid-span point load occurs at:
+    A. the support
+    B. one-quarter span
+    C. the mid-span
+    D. any point equally
+    Answer: `C`
+22. In high-rise buildings, shear walls are mainly used to resist:
+    A. gravity load only
+    B. horizontal load
+    C. thermal expansion only
+    D. finishing load
+    Answer: `B`
+23. Parametric design depends fundamentally on:
+    A. random geometry
+    B. parameter-constraint relationships
+    C. material catalogues
+    D. presentation skills
+    Answer: `B`
+24. In a site plan, the north direction is most directly identified by:
+    A. title block
+    B. section mark
+    C. north arrow
+    D. scale bar
+    Answer: `C`
+25. An exploded axonometric drawing is best suited to show:
+    A. cost calculation
+    B. system and assembly relationships
+    C. legal boundary lines
+    D. oral presentation order
+    Answer: `B`
+26. In a design review, the most effective response to criticism about “strong concept but weak function” is to:
+    A. repeat the concept keywords
+    B. explain the plan and section logic
+    C. change the topic
+    D. emphasize rendering style
+    Answer: `B`
+27. A BIM model differs from a pure geometric model mainly because it contains:
+    A. brighter textures
+    B. linked building information
+    C. easier hand-drawing effects
+    D. automatic design decisions
+    Answer: `B`
+28. In architectural presentation, good hierarchy means:
+    A. all drawings are equally dominant
+    B. information is organized by importance
+    C. more colors are always better
+    D. text should be minimized completely
+    Answer: `B`
+29. Daylight analysis in early design is most useful for controlling:
+    A. massing, spacing, and orientation
+    B. tuition fees
+    C. internship salary
+    D. drawing lineweights
+    Answer: `A`
+30. In building technology, a detail drawing is primarily used to explain:
+    A. the building history
+    B. how a local part is actually constructed
+    C. the urban context
+    D. the competition result
+    Answer: `B`
