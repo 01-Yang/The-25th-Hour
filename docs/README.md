@@ -21,9 +21,8 @@
 ## 开发与追溯
 
 - `unresolved-issues.md`：只记录仍需实现验证、跑局模拟或后续调参的问题。
-- `decision-log.md`：已合并的历史决策摘要。
+- `decision-log.md`：已合并的历史决策摘要与归档来源摘要。
 - `adr/`：关键结构决策记录。
-- `PRD-event-frequency-and-stage-weighting.md`、`PRD-evaluation-travel-internship-convergence.md`、`work-log-*.md`：归档文档，只用于追溯，不作为当前规则来源。
 
 ## 文档分工
 
@@ -42,4 +41,3 @@
 3. `numbers.md`
 4. 内容文档
 5. `decision-log.md`
-6. 归档 PRD 与工作日志
