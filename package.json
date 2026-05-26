@@ -1,0 +1,13 @@
+{
+  "name": "25thgame-simulator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sim": "node simulator/run.ts",
+    "sim:verify": "node simulator/verify.ts",
+    "sim:verify:events": "node simulator/verify-events.ts",
+    "sim:verify:routes": "node simulator/verify-routes.ts",
+    "sim:report": "node simulator/report.ts"
+  }
+}

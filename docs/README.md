@@ -16,10 +16,12 @@
 - `events.md`：事件池、事件正文和交互选项。
 - `endings.md`：人生结局、成长成就、图鉴与排行榜规则。
 - `question-banks.md`：大学课程、雅思、升学专业和行测题库。
+- `simulation-to-content-design.md`：把已跑通的模拟结论对接到内容设计任务。
 
 ## 开发与追溯
 
 - `unresolved-issues.md`：只放仍需实现验证、跑局模拟或人工审核的问题。
+- `simulation-balance.md`：记录 headless simulator 的验证命令、当前批量基线和阶段性调参入口。
 - `decision-log.md`：历史决策摘要，不作为现行规则源。
 - `development-freeze.md`：旧冻结文档归档入口；冻结口径已并入 `PRD.md`。
 - `adr/`：关键结构决策记录。
