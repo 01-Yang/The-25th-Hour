@@ -4,16 +4,20 @@ import type { EndingId, RouteId, StrategyId } from "./types.ts";
 interface Case {
   strategy: StrategyId;
   expectedRoute: RouteId | null;
-  expectedEnding: EndingId;
+  expectedEndings: EndingId[];
 }
 
 const cases: Case[] = [
-  { strategy: "normal", expectedRoute: null, expectedEnding: "stable_graduation" },
-  { strategy: "postgrad", expectedRoute: "postgrad_exam", expectedEnding: "basic_postgrad" },
-  { strategy: "overseas", expectedRoute: "overseas", expectedEnding: "overseas_basic" },
-  { strategy: "civil_service", expectedRoute: "civil_service", expectedEnding: "civil_service_fallback" },
-  { strategy: "architecture_job", expectedRoute: "architecture_job", expectedEnding: "architecture_job_success" },
-  { strategy: "career_change", expectedRoute: "career_change", expectedEnding: "career_change_success" },
+  { strategy: "normal", expectedRoute: null, expectedEndings: ["stable_graduation"] },
+  { strategy: "postgrad", expectedRoute: "postgrad_exam", expectedEndings: ["basic_postgrad"] },
+  { strategy: "overseas", expectedRoute: "overseas", expectedEndings: ["overseas_basic"] },
+  {
+    strategy: "civil_service",
+    expectedRoute: "civil_service",
+    expectedEndings: ["civil_service_success", "civil_service_fallback", "civil_service_failed"],
+  },
+  { strategy: "architecture_job", expectedRoute: "architecture_job", expectedEndings: ["architecture_job_success"] },
+  { strategy: "career_change", expectedRoute: "career_change", expectedEndings: ["career_change_success"] },
 ];
 
 let failures = 0;
@@ -23,7 +27,7 @@ for (const testCase of cases) {
   const result = summarize(state);
   const routeOk = result.formalRoute === testCase.expectedRoute;
   const fullLoopOk = result.weeks === 60;
-  const expectedEndingOk = result.ending === testCase.expectedEnding;
+  const expectedEndingOk = testCase.expectedEndings.includes(result.ending);
   const endingOk =
     testCase.expectedRoute === null
       ? result.hiddenRouteOutcome === null

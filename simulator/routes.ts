@@ -1,53 +1,46 @@
 import { randomInt } from "./rng.ts";
 import { log } from "./resolver.ts";
-import {
-  COMPETITION_AWARD_TIERS,
-  COMPETITION_STUB_THRESHOLDS,
-  INTERNSHIP_THRESHOLDS,
-  ROUTE_THRESHOLDS,
-  ROUTE_TIMING,
-} from "./balance.ts";
+import { ROUTE_TARGETS, ROUTE_THRESHOLDS, ROUTE_TIMING } from "./balance.ts";
 import type {
-  CompetitionAward,
   GameState,
-  InternshipTier,
   RouteFailureReason,
   RouteGroup,
   RouteId,
+  RouteTargetId,
   RouteOutcome,
 } from "./types.ts";
 
 interface RouteDefinition {
   id: RouteId;
   group: RouteGroup;
-  target: string;
+  defaultTarget: RouteTargetId;
 }
 
 const ROUTES: Record<RouteId, RouteDefinition> = {
   postgrad_exam: {
     id: "postgrad_exam",
     group: "education",
-    target: "ordinary_postgrad_school",
+    defaultTarget: "ordinary_postgrad_school",
   },
   overseas: {
     id: "overseas",
     group: "education",
-    target: "safe_overseas_school",
+    defaultTarget: "safe_overseas_school",
   },
   civil_service: {
     id: "civil_service",
     group: "civil",
-    target: "public_institution_general",
+    defaultTarget: "public_institution_general",
   },
   architecture_job: {
     id: "architecture_job",
     group: "architecture_job",
-    target: "local_design_institute",
+    defaultTarget: "local_design_institute",
   },
   career_change: {
     id: "career_change",
     group: "career_change",
-    target: "new_media_content",
+    defaultTarget: "new_media_content",
   },
 };
 
@@ -76,85 +69,15 @@ export function maybeFormalizeRoute(state: GameState): void {
   }
 
   const definition = ROUTES[route];
+  const target = targetForRoute(state, route);
   state.route.formal = {
     route,
     group: definition.group,
-    target: definition.target,
+    target,
     week: state.week,
   };
 
-  log(state, "week_start", "route_formal", `formal route: ${route} -> ${definition.target}`, {});
-}
-
-export function maybeRecordInternship(state: GameState): void {
-  if (state.semesterIndex < 3 || state.internshipValue >= INTERNSHIP_THRESHOLDS.namedFirm.value) {
-    return;
-  }
-
-  if (
-    state.attributes.design >= INTERNSHIP_THRESHOLDS.namedFirm.design &&
-    state.attributes.software >= INTERNSHIP_THRESHOLDS.namedFirm.software
-  ) {
-    recordInternship(state, "named_firm", INTERNSHIP_THRESHOLDS.namedFirm.value);
-    state.namedFirmInternship = true;
-    log(state, state.phase, "internship_stub", "named firm internship recorded", {});
-    return;
-  }
-
-  if (
-    state.attributes.design >= INTERNSHIP_THRESHOLDS.strong.design &&
-    state.attributes.software >= INTERNSHIP_THRESHOLDS.strong.software &&
-    state.internshipValue < INTERNSHIP_THRESHOLDS.strong.value
-  ) {
-    recordInternship(state, "strong", INTERNSHIP_THRESHOLDS.strong.value);
-    log(state, state.phase, "internship_stub", "strong firm internship recorded", {});
-    return;
-  }
-
-  if (
-    state.attributes.design >= INTERNSHIP_THRESHOLDS.ordinary.design &&
-    state.attributes.software >= INTERNSHIP_THRESHOLDS.ordinary.software &&
-    state.internshipValue < INTERNSHIP_THRESHOLDS.ordinary.value
-  ) {
-    recordInternship(state, "ordinary", INTERNSHIP_THRESHOLDS.ordinary.value);
-    log(state, state.phase, "internship_stub", "ordinary internship recorded", {});
-  }
-}
-
-export function maybeRecordCompetitionAfterReview(state: GameState): void {
-  const latest = state.reviews[state.reviews.length - 1];
-  if (
-    !latest ||
-    latest.finalGrade === "F" ||
-    state.semesterIndex > COMPETITION_STUB_THRESHOLDS.latestSemesterMax
-  ) {
-    return;
-  }
-
-  if (
-    latest.portfolioAdded >= COMPETITION_STUB_THRESHOLDS.latestPortfolioAdded &&
-    state.attributes.design >= COMPETITION_STUB_THRESHOLDS.design &&
-    state.attributes.aesthetic >= COMPETITION_STUB_THRESHOLDS.aesthetic
-  ) {
-    const awardRoll = competitionAwardRoll(latest.portfolioAdded, state.attributes.design, state.attributes.aesthetic);
-    const award = competitionAwardFromRoll(awardRoll);
-    const prizeMoney = COMPETITION_AWARD_TIERS[award].prizeMoney;
-    state.competitionRecords.push({
-      semesterIndex: latest.semesterIndex,
-      year: latest.year,
-      term: latest.term,
-      reviewGrade: latest.finalGrade,
-      portfolioAdded: latest.portfolioAdded,
-      awardRoll,
-      award,
-      prizeMoney,
-    });
-    state.competitionAwardCount += 1;
-    state.money += prizeMoney;
-    log(state, "semester_settlement", "competition_stub", `competition ${award} award recorded`, {
-      money: prizeMoney,
-    });
-  }
+  log(state, "week_start", "route_formal", `formal route: ${route} -> ${target}`, {});
 }
 
 export function maybeResolveHiddenRouteResultAfterReview(state: GameState): void {
@@ -204,45 +127,65 @@ export function routeForStrategy(strategy: GameState["strategy"]): RouteId | und
 }
 
 function resolvePostgradExam(state: GameState): void {
-  const thresholds = ROUTE_THRESHOLDS.postgradExam;
+  const target = currentRouteTarget(state, "postgrad_exam");
+  const thresholds = target.thresholds;
   const failureReasons: RouteFailureReason[] = [];
-  addMinFailure(failureReasons, state.gpa, thresholds.gpa, "gpa_below_threshold");
-  addMinFailure(failureReasons, state.portfolio, thresholds.portfolio, "portfolio_below_threshold");
-  addMinFailure(failureReasons, state.attributes.design, thresholds.design, "design_below_threshold");
-  addMinFailure(failureReasons, state.attributes.software, thresholds.software, "software_below_threshold");
-  addMinFailure(failureReasons, state.attributes.resilience, thresholds.resilience, "resilience_below_threshold");
-  if (recentFailedReviews(state, 4) > thresholds.recentFailedReviewsMax) {
+  addMinFailure(failureReasons, state.gpa, thresholds.gpa ?? 0, "gpa_below_threshold");
+  addMinFailure(failureReasons, state.portfolio, thresholds.portfolio ?? 0, "portfolio_below_threshold");
+  addMinFailure(failureReasons, state.attributes.design, thresholds.design ?? 0, "design_below_threshold");
+  addMinFailure(failureReasons, state.attributes.software, thresholds.software ?? 0, "software_below_threshold");
+  addMinFailure(failureReasons, state.attributes.resilience, thresholds.resilience ?? 0, "resilience_below_threshold");
+  if (recentFailedReviews(state, 4) > (thresholds.recentFailedReviewsMax ?? 99)) {
     failureReasons.push("recent_failed_reviews_above_threshold");
   }
   const eligible =
-    state.gpa >= thresholds.gpa &&
-    state.portfolio >= thresholds.portfolio &&
-    state.attributes.design >= thresholds.design &&
-    state.attributes.software >= thresholds.software &&
-    state.attributes.resilience >= thresholds.resilience &&
-    recentFailedReviews(state, 4) <= thresholds.recentFailedReviewsMax;
+    state.gpa >= (thresholds.gpa ?? 0) &&
+    state.portfolio >= (thresholds.portfolio ?? 0) &&
+    state.attributes.design >= (thresholds.design ?? 0) &&
+    state.attributes.software >= (thresholds.software ?? 0) &&
+    state.attributes.resilience >= (thresholds.resilience ?? 0) &&
+    recentFailedReviews(state, 4) <= (thresholds.recentFailedReviewsMax ?? 99);
 
-  const correct = drawExamCorrectCount(state, eligible ? thresholds.examFloorEligible : thresholds.examFloorIneligible);
-  const passed = eligible && correct >= thresholds.passCorrect;
-  if (correct < thresholds.passCorrect) {
+  const correct = drawExamCorrectCount(
+    state,
+    eligible ? target.examFloorEligible ?? 6 : target.examFloorIneligible ?? 4,
+  );
+  const passCorrect = target.passCorrect ?? 6;
+  const passed = eligible && correct >= passCorrect;
+  if (correct < passCorrect) {
     failureReasons.push("exam_score_below_threshold");
   }
-  const outcome: RouteOutcome = passed ? "basic_postgrad" : "postgrad_failed";
+  const outcome: RouteOutcome = passed
+    ? target.id === "ordinary_postgrad_school"
+      ? "basic_postgrad"
+      : "strong_postgrad"
+    : "postgrad_failed";
   cacheHiddenResult(state, passed, correctToPostgradScore(correct), outcome, failureReasons);
 }
 
 function resolveOverseasApplication(state: GameState): void {
-  const thresholds = ROUTE_THRESHOLDS.overseas;
+  const target = currentRouteTarget(state, "overseas");
+  const thresholds = target.thresholds;
+  const chanceRules = target.overseasChance ?? {
+    base: ROUTE_THRESHOLDS.overseas.baseChance,
+    max: ROUTE_THRESHOLDS.overseas.maxChance,
+    portfolioSpan: ROUTE_THRESHOLDS.overseas.portfolioChanceSpan,
+    portfolioExcessForGuaranteed: 60,
+    gpaExcessForGuaranteed: 0.25,
+  };
   const failureReasons: RouteFailureReason[] = [];
-  addMinFailure(failureReasons, state.gpa, thresholds.gpa, "gpa_below_threshold");
-  addMinFailure(failureReasons, state.portfolio, thresholds.portfolio, "portfolio_below_threshold");
-  const eligible = state.gpa >= thresholds.gpa && state.portfolio >= thresholds.portfolio;
+  addMinFailure(failureReasons, state.gpa, thresholds.gpa ?? 0, "gpa_below_threshold");
+  addMinFailure(failureReasons, state.portfolio, thresholds.portfolio ?? 0, "portfolio_below_threshold");
+  const eligible = state.gpa >= (thresholds.gpa ?? 0) && state.portfolio >= (thresholds.portfolio ?? 0);
   const chance = eligible
-    ? Math.min(
-        thresholds.maxChance,
-        thresholds.baseChance +
-          Math.max(0, state.portfolio - thresholds.portfolio) / thresholds.portfolioChanceSpan,
-      )
+    ? state.portfolio >= (thresholds.portfolio ?? 0) + chanceRules.portfolioExcessForGuaranteed &&
+      state.gpa >= (thresholds.gpa ?? 0) + chanceRules.gpaExcessForGuaranteed
+      ? 1
+      : Math.min(
+          chanceRules.max,
+          chanceRules.base +
+            Math.max(0, state.portfolio - (thresholds.portfolio ?? 0)) / chanceRules.portfolioSpan,
+        )
     : 0;
   const [rngState, roll] = randomInt(state.rngState, 1, 100);
   state.rngState = rngState;
@@ -250,77 +193,87 @@ function resolveOverseasApplication(state: GameState): void {
   if (!passed && eligible) {
     failureReasons.push("overseas_probability_roll_failed");
   }
-  const outcome: RouteOutcome = passed ? "overseas_basic" : "overseas_failed";
+  const outcome: RouteOutcome = passed
+    ? target.id === "overseas_s_tier"
+      ? "overseas_strong"
+      : "overseas_basic"
+    : "overseas_failed";
   cacheHiddenResult(state, passed, roll, outcome, failureReasons);
 }
 
 function resolveCivilServiceExam(state: GameState): void {
-  const thresholds = ROUTE_THRESHOLDS.civilService;
+  const target = currentRouteTarget(state, "civil_service");
+  const thresholds = target.thresholds;
   const failureReasons: RouteFailureReason[] = [];
-  addMinFailure(failureReasons, state.gpa, thresholds.eligible.gpa, "gpa_below_threshold");
-  addMinFailure(
-    failureReasons,
-    state.attributes.presentation,
-    thresholds.eligible.presentation,
-    "presentation_below_threshold",
-  );
-  addMinFailure(failureReasons, state.attributes.social, thresholds.eligible.social, "social_below_threshold");
-  addMinFailure(
-    failureReasons,
-    state.attributes.resilience,
-    thresholds.eligible.resilience,
-    "resilience_below_threshold",
-  );
+  addMinFailure(failureReasons, state.gpa, thresholds.gpa ?? 0, "gpa_below_threshold");
+  addMinFailure(failureReasons, state.attributes.presentation, thresholds.presentation ?? 0, "presentation_below_threshold");
+  addMinFailure(failureReasons, state.attributes.social, thresholds.social ?? 0, "social_below_threshold");
+  addMinFailure(failureReasons, state.attributes.resilience, thresholds.resilience ?? 0, "resilience_below_threshold");
+  addMinFailure(failureReasons, state.attributes.design, thresholds.design ?? 0, "design_below_threshold");
+  if (recentFailedReviews(state, 4) > (thresholds.recentFailedReviewsMax ?? 99)) {
+    failureReasons.push("recent_failed_reviews_above_threshold");
+  }
   const eligible =
-    state.gpa >= thresholds.eligible.gpa &&
-    state.attributes.presentation >= thresholds.eligible.presentation &&
-    state.attributes.social >= thresholds.eligible.social &&
-    state.attributes.resilience >= thresholds.eligible.resilience;
-  const correct = drawExamCorrectCount(state, eligible ? thresholds.examFloorEligible : thresholds.examFloorIneligible);
-  const passed = eligible && correct >= thresholds.passCorrect;
-  if (correct < thresholds.passCorrect) {
+    state.gpa >= (thresholds.gpa ?? 0) &&
+    state.attributes.presentation >= (thresholds.presentation ?? 0) &&
+    state.attributes.social >= (thresholds.social ?? 0) &&
+    state.attributes.resilience >= (thresholds.resilience ?? 0) &&
+    state.attributes.design >= (thresholds.design ?? 0) &&
+    recentFailedReviews(state, 4) <= (thresholds.recentFailedReviewsMax ?? 99);
+  const correct = drawExamCorrectCount(
+    state,
+    eligible ? target.examFloorEligible ?? 6 : target.examFloorIneligible ?? 5,
+  );
+  const passCorrect = target.passCorrect ?? 7;
+  const passed = eligible && correct >= passCorrect;
+  if (correct < passCorrect) {
     failureReasons.push("exam_score_below_threshold");
   }
   const fallback =
-    state.attributes.presentation >= thresholds.fallback.presentation &&
-    state.attributes.social >= thresholds.fallback.social &&
-    state.attributes.resilience >= thresholds.fallback.resilience &&
-    correct >= thresholds.fallbackCorrect;
-  const outcome: RouteOutcome = passed
-    ? "civil_service_success"
-    : fallback
-      ? "civil_service_fallback"
-      : "civil_service_failed";
+    target.id !== "selection_home" &&
+    state.attributes.presentation >= ROUTE_THRESHOLDS.civilService.fallback.presentation &&
+    state.attributes.social >= ROUTE_THRESHOLDS.civilService.fallback.social &&
+    state.attributes.resilience >= ROUTE_THRESHOLDS.civilService.fallback.resilience &&
+    correct >= (target.fallbackCorrect ?? ROUTE_THRESHOLDS.civilService.fallbackCorrect);
+  const outcome: RouteOutcome = passed ? "civil_service_success" : fallback ? "civil_service_fallback" : "civil_service_failed";
   cacheHiddenResult(state, passed || fallback, correctToCivilServiceScore(correct), outcome, passed ? [] : failureReasons);
 }
 
 function resolveArchitectureJob(state: GameState): void {
-  const thresholds = ROUTE_THRESHOLDS.architectureJob;
+  const target = currentRouteTarget(state, "architecture_job");
+  const thresholds = target.thresholds;
   const failureReasons: RouteFailureReason[] = [];
-  addMinFailure(failureReasons, state.attributes.design, thresholds.design, "design_below_threshold");
-  addMinFailure(failureReasons, state.attributes.software, thresholds.software, "software_below_threshold");
-  addMinFailure(failureReasons, state.internshipValue, thresholds.internshipValue, "internship_below_threshold");
+  addMinFailure(failureReasons, state.attributes.design, thresholds.design ?? 0, "design_below_threshold");
+  addMinFailure(failureReasons, state.attributes.software, thresholds.software ?? 0, "software_below_threshold");
+  addMinFailure(failureReasons, state.portfolio, thresholds.portfolio ?? 0, "portfolio_below_threshold");
+  if (state.internshipValue < (thresholds.internshipValue ?? 0) || (thresholds.namedFirmInternship && !state.namedFirmInternship)) {
+    failureReasons.push("internship_below_threshold");
+  }
   const passed =
-    state.attributes.design >= thresholds.design &&
-    state.attributes.software >= thresholds.software &&
-    state.internshipValue >= thresholds.internshipValue;
+    state.attributes.design >= (thresholds.design ?? 0) &&
+    state.attributes.software >= (thresholds.software ?? 0) &&
+    state.portfolio >= (thresholds.portfolio ?? 0) &&
+    state.internshipValue >= (thresholds.internshipValue ?? 0) &&
+    (!thresholds.namedFirmInternship || state.namedFirmInternship);
   const outcome: RouteOutcome = passed ? "architecture_job_success" : "architecture_job_pending";
   cacheHiddenResult(state, passed, undefined, outcome, failureReasons);
 }
 
 function resolveCareerChange(state: GameState): void {
-  const thresholds = ROUTE_THRESHOLDS.careerChange;
+  const target = currentRouteTarget(state, "career_change");
+  const thresholds = target.thresholds;
   const failureReasons: RouteFailureReason[] = [];
-  addMinFailure(
-    failureReasons,
-    state.attributes.presentation,
-    thresholds.presentation,
-    "presentation_below_threshold",
-  );
-  addMinFailure(failureReasons, state.attributes.aesthetic, thresholds.aesthetic, "aesthetic_below_threshold");
+  addMinFailure(failureReasons, state.attributes.presentation, thresholds.presentation ?? 0, "presentation_below_threshold");
+  addMinFailure(failureReasons, state.attributes.aesthetic, thresholds.aesthetic ?? 0, "aesthetic_below_threshold");
+  addMinFailure(failureReasons, state.attributes.software, thresholds.software ?? 0, "software_below_threshold");
+  addMinFailure(failureReasons, state.portfolio, thresholds.portfolio ?? 0, "portfolio_below_threshold");
+  addMinFailure(failureReasons, state.aiExperience, thresholds.aiExperience ?? 0, "ai_experience_below_threshold");
   const passed =
-    state.attributes.presentation >= thresholds.presentation &&
-    state.attributes.aesthetic >= thresholds.aesthetic;
+    state.attributes.presentation >= (thresholds.presentation ?? 0) &&
+    state.attributes.aesthetic >= (thresholds.aesthetic ?? 0) &&
+    state.attributes.software >= (thresholds.software ?? 0) &&
+    state.portfolio >= (thresholds.portfolio ?? 0) &&
+    state.aiExperience >= (thresholds.aiExperience ?? 0);
   const outcome: RouteOutcome = passed ? "career_change_success" : "career_change_failed";
   cacheHiddenResult(state, passed, undefined, outcome, failureReasons);
 }
@@ -346,6 +299,9 @@ function cacheHiddenResult(
     attributesAtDecision: { ...state.attributes },
     gpaAtDecision: Number(state.gpa.toFixed(2)),
     portfolioAtDecision: state.portfolio,
+    internshipValueAtDecision: state.internshipValue,
+    namedFirmInternshipAtDecision: state.namedFirmInternship,
+    internshipTierAtDecision: state.internshipRecords[state.internshipRecords.length - 1]?.tier,
     recentFailedReviewsAtDecision: recentFailedReviews(state, 4),
     failureReasons,
   };
@@ -363,31 +319,6 @@ function drawExamCorrectCount(state: GameState, floor: number): number {
   const [rngState, roll] = randomInt(state.rngState, 0, 4);
   state.rngState = rngState;
   return Math.min(10, floor + roll);
-}
-
-function recordInternship(state: GameState, tier: InternshipTier, value: number): void {
-  state.internshipValue = value;
-  state.internshipRecords.push({
-    semesterIndex: state.semesterIndex,
-    week: state.week,
-    tier,
-    value,
-    designAtOffer: state.attributes.design,
-    softwareAtOffer: state.attributes.software,
-  });
-}
-
-function competitionAwardRoll(portfolioAdded: number, design: number, aesthetic: number): number {
-  const portfolioBonus = Math.max(0, portfolioAdded - COMPETITION_STUB_THRESHOLDS.latestPortfolioAdded);
-  const designBonus = Math.max(0, design - COMPETITION_STUB_THRESHOLDS.design);
-  const aestheticBonus = Math.max(0, aesthetic - COMPETITION_STUB_THRESHOLDS.aesthetic);
-  return Math.min(99, Math.floor(portfolioBonus * 0.9 + designBonus * 1.1 + aestheticBonus * 1.1));
-}
-
-function competitionAwardFromRoll(roll: number): CompetitionAward {
-  if (roll >= COMPETITION_AWARD_TIERS.first.minRoll) return "first";
-  if (roll >= COMPETITION_AWARD_TIERS.second.minRoll) return "second";
-  return "third";
 }
 
 function correctToPostgradScore(correct: number): number {
@@ -421,4 +352,26 @@ function addMinFailure(
   if (actual < required) {
     failureReasons.push(reason);
   }
+}
+
+function targetForRoute(state: GameState, route: RouteId): RouteTargetId {
+  const requested = state.route.targetOverride;
+  if (requested) {
+    const target = ROUTE_TARGETS[requested];
+    if (target.route !== route) {
+      throw new Error(`Route target ${requested} does not belong to route ${route}`);
+    }
+    return requested;
+  }
+
+  return ROUTES[route].defaultTarget;
+}
+
+function currentRouteTarget(state: GameState, expectedRoute: RouteId) {
+  const targetId = state.route.formal?.target ?? targetForRoute(state, expectedRoute);
+  const target = ROUTE_TARGETS[targetId];
+  if (target.route !== expectedRoute) {
+    throw new Error(`Route target ${targetId} does not belong to route ${expectedRoute}`);
+  }
+  return target;
 }

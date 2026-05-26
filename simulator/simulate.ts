@@ -1,6 +1,8 @@
 import { performAction } from "./actions.ts";
+import { maybeRecordCompetitionAfterReview } from "./competitions.ts";
 import { resolveCourseForSemester, selectCourseForSemester } from "./courses.ts";
 import { maybeTriggerWeeklyEvent } from "./events.ts";
+import { maybeApplyForInternship, maybeApplyInternshipWeek } from "./internships.ts";
 import { applyDelta, applyWeeklySettlement, log } from "./resolver.ts";
 import {
   ACTIONS_PER_WEEK,
@@ -13,8 +15,6 @@ import {
 import { resolveReview } from "./review.ts";
 import {
   maybeFormalizeRoute,
-  maybeRecordCompetitionAfterReview,
-  maybeRecordInternship,
   maybeResolveHiddenRouteResultAfterReview,
   maybeSetRouteIntention,
   routeOutcomeForEnding,
@@ -33,6 +33,7 @@ import type {
 
 export function runSimulation(options: RunOptions): GameState {
   const state = createInitialState(options.seed, options.strategy);
+  state.route.targetOverride = options.routeTarget;
   applyStrategyHarness(state);
   runOpening(state);
 
@@ -80,6 +81,7 @@ function runSemester(state: GameState, eventsEnabled: boolean): void {
   state.phase = "semester_start";
   state.weekInSemester = 0;
   state.weeklyActionCounts = {};
+  state.semesterActionTally = {};
   log(state, "semester_start", "semester", `Semester ${state.semesterIndex} started`, {});
   selectCourseForSemester(state);
 
@@ -125,7 +127,7 @@ function runWeek(state: GameState, weekInSemester: number, eventsEnabled: boolea
 
   maybeSetRouteIntention(state);
   maybeFormalizeRoute(state);
-  maybeRecordInternship(state);
+  maybeApplyForInternship(state);
   maybeTriggerWeeklyEvent(state, eventsEnabled);
 
   state.phase = "week_action";
@@ -147,6 +149,7 @@ function runWeek(state: GameState, weekInSemester: number, eventsEnabled: boolea
       "week_settlement",
     );
   }
+  maybeApplyInternshipWeek(state);
   applyWeeklySettlement(state);
 }
 
@@ -220,12 +223,16 @@ export function summarize(state: GameState) {
     routeIntention: state.route.intention ?? null,
     formalRoute: state.route.formal?.route ?? null,
     routeTarget: state.route.formal?.target ?? null,
+    routeTargetOverride: state.route.targetOverride ?? null,
     hiddenRouteOutcome: state.route.hiddenResult?.outcome ?? null,
     hiddenRoutePassed: state.route.hiddenResult?.passed ?? null,
     hiddenRouteScore: state.route.hiddenResult?.score ?? null,
     hiddenRouteAttributes: state.route.hiddenResult?.attributesAtDecision ?? null,
     hiddenRouteGpa: state.route.hiddenResult?.gpaAtDecision ?? null,
     hiddenRoutePortfolio: state.route.hiddenResult?.portfolioAtDecision ?? null,
+    hiddenRouteInternshipValue: state.route.hiddenResult?.internshipValueAtDecision ?? null,
+    hiddenRouteNamedFirmInternship: state.route.hiddenResult?.namedFirmInternshipAtDecision ?? null,
+    hiddenRouteInternshipTier: state.route.hiddenResult?.internshipTierAtDecision ?? null,
     hiddenRouteRecentFailedReviews: state.route.hiddenResult?.recentFailedReviewsAtDecision ?? null,
     hiddenRouteFailureReasons: state.route.hiddenResult?.failureReasons ?? null,
     selectedCourse: state.selectedCourse ?? null,
@@ -235,8 +242,25 @@ export function summarize(state: GameState) {
     namedFirmInternship: state.namedFirmInternship,
     internshipTier: state.internshipRecords[state.internshipRecords.length - 1]?.tier ?? null,
     internshipRecordCount: state.internshipRecords.length,
+    internshipApplicationCount: state.internshipApplications.length,
+    internshipAcceptedCount: state.internshipApplications.filter((application) => application.accepted).length,
+    internshipRejectedCount: state.internshipApplications.filter((application) => !application.accepted).length,
+    internshipOrdinaryApplicationCount: state.internshipApplications.filter((application) => application.tier === "ordinary").length,
+    internshipStrongApplicationCount: state.internshipApplications.filter((application) => application.tier === "strong").length,
+    internshipNamedFirmApplicationCount: state.internshipApplications.filter((application) => application.tier === "named_firm").length,
+    activeInternshipTier: state.activeInternship?.tier ?? null,
+    competitionSubmissionCount: state.competitionRecords.length,
+    competitionShortlistCount: state.competitionRecords.filter((record) => record.shortlisted).length,
+    competitionRejectionCount: state.competitionRecords.filter((record) => !record.shortlisted).length,
     competitionAwardCount: state.competitionAwardCount,
     competitionAwards: awardCounts(state.competitionRecords.map((record) => record.award)),
+    competitionResults: state.competitionRecords.map((record) => ({
+      competitionId: record.competitionId,
+      competitionName: record.competitionName,
+      award: record.award,
+      shortlisted: record.shortlisted,
+      prizeMoney: record.prizeMoney,
+    })),
     competitionPrizeMoney: state.competitionRecords.reduce((sum, record) => sum + record.prizeMoney, 0),
     completedGraduationDesign: state.completedGraduationDesign,
     energy: state.energy,
@@ -254,10 +278,11 @@ export function runBatch(
   count: number,
   seedStart = 1,
   events = false,
+  routeTarget?: RunOptions["routeTarget"],
 ): ReturnType<typeof summarize>[] {
   const results = [];
   for (let i = 0; i < count; i += 1) {
-    results.push(summarize(runSimulation({ seed: seedStart + i, strategy, events })));
+    results.push(summarize(runSimulation({ seed: seedStart + i, strategy, events, routeTarget })));
   }
   return results;
 }
@@ -272,9 +297,14 @@ export function aggregate(results: ReturnType<typeof summarize>[]) {
   let hiddenRouteCount = 0;
   let hiddenRouteGpaTotal = 0;
   let hiddenRoutePortfolioTotal = 0;
+  let hiddenRouteInternshipValueTotal = 0;
+  let hiddenRouteNamedFirmInternshipCount = 0;
   let hiddenRouteScoreTotal = 0;
   let hiddenRouteScoreCount = 0;
   let totalCompetitionPrizeMoney = 0;
+  let totalCompetitionSubmissions = 0;
+  let totalCompetitionShortlists = 0;
+  let totalCompetitionRejections = 0;
   const hiddenRouteAttributeTotals: Attributes = {
     design: 0,
     software: 0,
@@ -284,13 +314,33 @@ export function aggregate(results: ReturnType<typeof summarize>[]) {
     resilience: 0,
   };
   const competitionAwardTotals: Record<CompetitionAward, number> = emptyAwardCounts();
+  const competitionById: Record<
+    string,
+    {
+      submissions: number;
+      shortlists: number;
+      rejections: number;
+      prizeMoney: number;
+      awards: Record<CompetitionAward, number>;
+    }
+  > = {};
   const routeFailureReasons: Record<RouteFailureReason, number> = emptyRouteFailureCounts();
+  const routeTargetDistribution: Record<string, number> = {};
   const internshipTierDistribution: Record<InternshipTier | "none", number> = {
     none: 0,
     ordinary: 0,
     strong: 0,
     named_firm: 0,
   };
+  const hiddenRouteInternshipTierDistribution: Record<InternshipTier | "none", number> = {
+    none: 0,
+    ordinary: 0,
+    strong: 0,
+    named_firm: 0,
+  };
+  let totalInternshipApplications = 0;
+  let totalInternshipAccepted = 0;
+  let totalInternshipRejected = 0;
   const anomalySeeds: number[] = [];
 
   for (const result of results) {
@@ -301,10 +351,33 @@ export function aggregate(results: ReturnType<typeof summarize>[]) {
     totalEvents += result.eventCount;
     totalAiExperience += result.aiExperience;
     totalCompetitionPrizeMoney += result.competitionPrizeMoney;
+    totalCompetitionSubmissions += result.competitionSubmissionCount;
+    totalCompetitionShortlists += result.competitionShortlistCount;
+    totalCompetitionRejections += result.competitionRejectionCount;
+    totalInternshipApplications += result.internshipApplicationCount;
+    totalInternshipAccepted += result.internshipAcceptedCount;
+    totalInternshipRejected += result.internshipRejectedCount;
+    if (result.routeTarget) {
+      routeTargetDistribution[result.routeTarget] = (routeTargetDistribution[result.routeTarget] ?? 0) + 1;
+    }
 
     internshipTierDistribution[result.internshipTier ?? "none"] += 1;
     for (const award of Object.keys(competitionAwardTotals) as CompetitionAward[]) {
       competitionAwardTotals[award] += result.competitionAwards[award];
+    }
+    for (const competition of result.competitionResults) {
+      competitionById[competition.competitionId] ??= {
+        submissions: 0,
+        shortlists: 0,
+        rejections: 0,
+        prizeMoney: 0,
+        awards: emptyAwardCounts(),
+      };
+      competitionById[competition.competitionId].submissions += 1;
+      competitionById[competition.competitionId].shortlists += competition.shortlisted ? 1 : 0;
+      competitionById[competition.competitionId].rejections += competition.shortlisted ? 0 : 1;
+      competitionById[competition.competitionId].prizeMoney += competition.prizeMoney;
+      competitionById[competition.competitionId].awards[competition.award] += 1;
     }
     for (const reason of result.hiddenRouteFailureReasons ?? []) {
       routeFailureReasons[reason] = (routeFailureReasons[reason] ?? 0) + 1;
@@ -314,6 +387,11 @@ export function aggregate(results: ReturnType<typeof summarize>[]) {
       hiddenRouteCount += 1;
       hiddenRouteGpaTotal += result.hiddenRouteGpa ?? 0;
       hiddenRoutePortfolioTotal += result.hiddenRoutePortfolio ?? 0;
+      hiddenRouteInternshipValueTotal += result.hiddenRouteInternshipValue ?? 0;
+      if (result.hiddenRouteNamedFirmInternship) {
+        hiddenRouteNamedFirmInternshipCount += 1;
+      }
+      hiddenRouteInternshipTierDistribution[result.hiddenRouteInternshipTier ?? "none"] += 1;
       for (const key of Object.keys(hiddenRouteAttributeTotals) as (keyof Attributes)[]) {
         hiddenRouteAttributeTotals[key] += result.hiddenRouteAttributes[key];
       }
@@ -345,8 +423,16 @@ export function aggregate(results: ReturnType<typeof summarize>[]) {
     ),
     averageCompetitionAwardsByLevel: averageAwardCounts(competitionAwardTotals, results.length),
     averageCompetitionPrizeMoney: Number((totalCompetitionPrizeMoney / results.length).toFixed(2)),
+    averageCompetitionSubmissions: Number((totalCompetitionSubmissions / results.length).toFixed(2)),
+    averageCompetitionShortlists: Number((totalCompetitionShortlists / results.length).toFixed(2)),
+    averageCompetitionRejections: Number((totalCompetitionRejections / results.length).toFixed(2)),
+    competitionById: averageCompetitionById(competitionById, results.length),
     awardRuns: results.filter((result) => result.competitionAwardCount > 0).length,
+    averageInternshipApplications: Number((totalInternshipApplications / results.length).toFixed(2)),
+    averageInternshipAccepted: Number((totalInternshipAccepted / results.length).toFixed(2)),
+    averageInternshipRejected: Number((totalInternshipRejected / results.length).toFixed(2)),
     internshipTierDistribution,
+    routeTargetDistribution,
     routeFailureReasons: compactCounts(routeFailureReasons),
     hiddenRouteDecision:
       hiddenRouteCount > 0
@@ -354,6 +440,9 @@ export function aggregate(results: ReturnType<typeof summarize>[]) {
             count: hiddenRouteCount,
             averageGpa: Number((hiddenRouteGpaTotal / hiddenRouteCount).toFixed(2)),
             averagePortfolio: Number((hiddenRoutePortfolioTotal / hiddenRouteCount).toFixed(2)),
+            averageInternshipValue: Number((hiddenRouteInternshipValueTotal / hiddenRouteCount).toFixed(2)),
+            namedFirmInternshipRate: Number((hiddenRouteNamedFirmInternshipCount / hiddenRouteCount).toFixed(2)),
+            internshipTierDistribution: hiddenRouteInternshipTierDistribution,
             averageScore:
               hiddenRouteScoreCount > 0
                 ? Number((hiddenRouteScoreTotal / hiddenRouteScoreCount).toFixed(2))
@@ -363,6 +452,34 @@ export function aggregate(results: ReturnType<typeof summarize>[]) {
         : null,
     anomalySeeds: anomalySeeds.slice(0, 20),
   };
+}
+
+function averageCompetitionById(
+  totals: Record<
+    string,
+    {
+      submissions: number;
+      shortlists: number;
+      rejections: number;
+      prizeMoney: number;
+      awards: Record<CompetitionAward, number>;
+    }
+  >,
+  count: number,
+) {
+  return Object.fromEntries(
+    Object.entries(totals).map(([competitionId, total]) => [
+      competitionId,
+      {
+        submissions: total.submissions,
+        averageSubmissions: Number((total.submissions / count).toFixed(2)),
+        shortlists: total.shortlists,
+        rejections: total.rejections,
+        averagePrizeMoney: Number((total.prizeMoney / count).toFixed(2)),
+        awards: total.awards,
+      },
+    ]),
+  );
 }
 
 function awardCounts(awards: CompetitionAward[]): Record<CompetitionAward, number> {
@@ -375,6 +492,7 @@ function awardCounts(awards: CompetitionAward[]): Record<CompetitionAward, numbe
 
 function emptyAwardCounts(): Record<CompetitionAward, number> {
   return {
+    none: 0,
     third: 0,
     second: 0,
     first: 0,
@@ -386,6 +504,7 @@ function averageAwardCounts(
   count: number,
 ): Record<CompetitionAward, number> {
   return {
+    none: Number((totals.none / count).toFixed(2)),
     third: Number((totals.third / count).toFixed(2)),
     second: Number((totals.second / count).toFixed(2)),
     first: Number((totals.first / count).toFixed(2)),
@@ -406,6 +525,7 @@ function emptyRouteFailureCounts(): Record<RouteFailureReason, number> {
     recent_failed_reviews_above_threshold: 0,
     exam_score_below_threshold: 0,
     overseas_probability_roll_failed: 0,
+    ai_experience_below_threshold: 0,
   };
 }
 

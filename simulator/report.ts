@@ -1,5 +1,5 @@
 import { aggregate, runBatch } from "./simulate.ts";
-import type { StrategyId } from "./types.ts";
+import type { RouteTargetId, StrategyId } from "./types.ts";
 
 const args = parseArgs(process.argv.slice(2));
 const count = Number(args.count ?? 1000);
@@ -8,6 +8,7 @@ const strategies = (args.strategies ?? "normal,balanced,postgrad,overseas,civil_
   .split(",")
   .filter(Boolean) as StrategyId[];
 const includeEvents = args.events === "true" || args.events === "1";
+const routeTarget = args.routeTarget as RouteTargetId | undefined;
 
 const report = {
   seedStart: seed,
@@ -15,7 +16,7 @@ const report = {
   events: includeEvents,
   strategies: Object.fromEntries(
     strategies.map((strategy) => {
-      const results = runBatch(strategy, count, seed, includeEvents);
+      const results = runBatch(strategy, count, seed, includeEvents, routeTarget);
       return [strategy, aggregate(results)];
     }),
   ),

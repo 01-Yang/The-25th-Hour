@@ -75,9 +75,11 @@ export function performAction(state: GameState, actionId: ActionId): boolean {
 
   state.actionsRemaining -= 1;
   state.weeklyActionCounts[actionId] = (state.weeklyActionCounts[actionId] ?? 0) + 1;
+  state.semesterActionTally[actionId] = (state.semesterActionTally[actionId] ?? 0) + 1;
   state.actionTally[actionId] = (state.actionTally[actionId] ?? 0) + 1;
 
   applyDelta(state, action.id, action.name, delta, "week_action");
+  maybeRecordAiPracticeExperience(state, actionId);
   return true;
 }
 
@@ -95,4 +97,28 @@ export function qualityModifier(state: GameState): number {
   if (qualityUnderstanding >= 60) return 2;
   if (qualityUnderstanding >= 40) return 1;
   return 0;
+}
+
+function maybeRecordAiPracticeExperience(state: GameState, actionId: ActionId): void {
+  if (actionId !== "learn_ai_software") {
+    return;
+  }
+
+  if ((state.semesterActionTally.learn_ai_software ?? 0) < 4) {
+    return;
+  }
+
+  if (state.aiPracticeAwardedSemesters.includes(state.semesterIndex)) {
+    return;
+  }
+
+  state.aiPracticeAwardedSemesters.push(state.semesterIndex);
+  state.aiExperience += 1;
+  log(
+    state,
+    "week_action",
+    "learn_ai_software:ai_experience",
+    "AI experience +1 from repeated software practice",
+    {},
+  );
 }

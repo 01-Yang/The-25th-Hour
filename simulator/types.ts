@@ -46,6 +46,31 @@ export type RouteId =
 
 export type RouteGroup = "education" | "civil" | "architecture_job" | "career_change";
 
+export type RouteTargetId =
+  | "dream_postgrad_school"
+  | "strong_postgrad_school"
+  | "ordinary_postgrad_school"
+  | "overseas_s_tier"
+  | "overseas_a_tier"
+  | "safe_overseas_school"
+  | "overseas_c_tier"
+  | "selection_home"
+  | "civil_service_ministry"
+  | "civil_service_provincial"
+  | "teacher_bianzhi"
+  | "public_institution_general"
+  | "administration_bianzhi"
+  | "independent_studio"
+  | "local_design_institute"
+  | "state_owned_design_institute"
+  | "foreign_firm"
+  | "master_studio"
+  | "ai_product_manager"
+  | "game_scene_artist"
+  | "sales_business"
+  | "new_media_content"
+  | "illustrator";
+
 export type RouteOutcome =
   | "strong_postgrad"
   | "basic_postgrad"
@@ -73,7 +98,8 @@ export type RouteFailureReason =
   | "internship_below_threshold"
   | "recent_failed_reviews_above_threshold"
   | "exam_score_below_threshold"
-  | "overseas_probability_roll_failed";
+  | "overseas_probability_roll_failed"
+  | "ai_experience_below_threshold";
 
 export type CourseId =
   | "architecture_history"
@@ -86,7 +112,13 @@ export type CourseId =
 
 export type ReviewGrade = "S" | "A" | "B" | "C" | "D" | "F";
 
-export type CompetitionAward = "third" | "second" | "first";
+export type CompetitionAward = "none" | "third" | "second" | "first";
+
+export type CompetitionId =
+  | "campus_corner_renovation"
+  | "old_block_micro_renewal"
+  | "green_building_concept"
+  | "young_architect_portfolio";
 
 export type InternshipTier = "ordinary" | "strong" | "named_firm";
 
@@ -157,12 +189,17 @@ export interface ReviewRecord {
 }
 
 export interface CompetitionRecord {
+  competitionId: CompetitionId;
+  competitionName: string;
   semesterIndex: number;
   year: number;
   term: 1 | 2;
   reviewGrade: ReviewGrade;
   portfolioAdded: number;
-  awardRoll: number;
+  performance: number;
+  shortlistChance: number;
+  shortlistRoll: number;
+  shortlisted: boolean;
   award: CompetitionAward;
   prizeMoney: number;
 }
@@ -170,8 +207,34 @@ export interface CompetitionRecord {
 export interface InternshipRecord {
   semesterIndex: number;
   week: number;
+  completedWeek: number;
   tier: InternshipTier;
   value: number;
+  designAtOffer: number;
+  softwareAtOffer: number;
+  wageTotal: number;
+  weeksCompleted: number;
+}
+
+export interface InternshipApplicationRecord {
+  semesterIndex: number;
+  week: number;
+  tier: InternshipTier;
+  chance: number;
+  roll: number;
+  accepted: boolean;
+  designAtApplication: number;
+  softwareAtApplication: number;
+}
+
+export interface ActiveInternship {
+  tier: InternshipTier;
+  value: number;
+  startSemesterIndex: number;
+  startWeek: number;
+  remainingWeeks: number;
+  weeksCompleted: number;
+  wageTotal: number;
   designAtOffer: number;
   softwareAtOffer: number;
 }
@@ -217,22 +280,26 @@ export interface EventRecord {
 }
 
 export interface RouteState {
+  targetOverride?: RouteTargetId;
   intention?: RouteId;
   formal?: {
     route: RouteId;
     group: RouteGroup;
-    target: string;
+    target: RouteTargetId;
     week: number;
   };
   hiddenResult?: {
     route: RouteId;
-    target: string;
+    target: RouteTargetId;
     passed: boolean;
     score?: number;
     outcome: RouteOutcome;
     attributesAtDecision: Attributes;
     gpaAtDecision: number;
     portfolioAtDecision: number;
+    internshipValueAtDecision: number;
+    namedFirmInternshipAtDecision: boolean;
+    internshipTierAtDecision?: InternshipTier;
     recentFailedReviewsAtDecision: number;
     failureReasons: RouteFailureReason[];
   };
@@ -275,6 +342,7 @@ export interface GameState {
   semesterIndex: number;
   actionsRemaining: number;
   weeklyActionCounts: Partial<Record<ActionId, number>>;
+  semesterActionTally: Partial<Record<ActionId, number>>;
   energy: number;
   maxEnergy: number;
   pressure: number;
@@ -297,11 +365,16 @@ export interface GameState {
   eventLastTriggeredWeek: Record<string, number>;
   eventTally: Record<string, number>;
   aiExperience: number;
+  aiPracticeAwardedSemesters: number[];
   route: RouteState;
   internshipValue: number;
   namedFirmInternship: boolean;
+  activeInternship?: ActiveInternship;
+  internshipApplications: InternshipApplicationRecord[];
+  internshipAppliedSemesters: number[];
   internshipRecords: InternshipRecord[];
   competitionAwardCount: number;
+  competitionSubmittedIds: CompetitionId[];
   competitionRecords: CompetitionRecord[];
   guaranteedEvents: {
     lightlyHolding: boolean;
@@ -328,6 +401,7 @@ export interface ActionDefinition {
 export interface RunOptions {
   seed: number;
   strategy: StrategyId;
+  routeTarget?: RouteTargetId;
   maxWeeks?: number;
   verbose?: boolean;
   events?: boolean;

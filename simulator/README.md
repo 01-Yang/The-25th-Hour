@@ -6,7 +6,7 @@ This simulator is the first executable rules kernel for the core run-loop. It ha
 - weekly actions and unified settlement deltas
 - review grades, GPA, portfolio accumulation
 - four failure boundaries: money, energy, pressure, consecutive failed reviews
-- internship tier records, competition award tiers, and route diagnostic summaries
+- internship tier records, named competition results, and route diagnostic summaries
 
 Tuning notes and current batch baselines are tracked in `../docs/simulation-balance.md`.
 
@@ -33,8 +33,11 @@ Run core verification:
 
 ```bash
 npm run sim:verify
+npm run sim:verify:competitions
 npm run sim:verify:events
+npm run sim:verify:internships
 npm run sim:verify:routes
+npm run sim:verify:route-targets
 ```
 
 Generate a baseline report:
@@ -42,7 +45,17 @@ Generate a baseline report:
 ```bash
 npm run sim:report -- --count 1000
 npm run sim:report -- --count 1000 --events
+npm run sim:report:route-targets -- --count 100 --events
 ```
+
+Run a specific route target:
+
+```bash
+npm run sim -- --seed 25 --strategy postgrad --routeTarget strong_postgrad_school --events
+npm run sim -- --strategy architecture_job --routeTarget master_studio --count 100 --events
+```
+
+The commands listed above are not placeholders only. They have been exercised in this worktree alongside the full verify/report suite so the README examples stay in sync with runnable behavior.
 
 Strategies:
 
@@ -58,24 +71,28 @@ Strategies:
 - `pressure`: stresses pressure failure
 - `fail_reviews`: stresses consecutive failed review failure
 
-Route simulation currently covers one representative target per route group and caches hidden route results after the year-5-upper review. The final ending parser then reads that cached route outcome only after graduation design is complete.
+Route simulation covers one representative default target per route group, plus explicit `--routeTarget` overrides for stronger schools, overseas tiers, civil-service subroutes, architecture jobs, and career-change jobs. Route results are cached after the year-5-upper review. The final ending parser then reads that cached route outcome only after graduation design is complete.
 
-Core route, internship, competition, and strategy tuning constants live in `balance.ts`.
+Core route, route-target, internship, competition, and strategy tuning constants live in `balance.ts`.
 
-Current route-balance signals from the stubbed 100-run event batch:
+Current route-balance signals from the 100-run event batch:
 
 - `postgrad`, `architecture_job`, and `career_change` representative strategies are now reachable with fixed seed 25.
-- `civil_service` fixed seed 25 reaches the fallback outcome, while batch runs still preserve failure and higher-success outcomes through the exam roll.
+- `civil_service` fixed seed 25 currently reaches formal success, while batch runs still preserve fallback and failure outcomes through the exam roll.
 - `overseas` remains probabilistic after meeting GPA and portfolio eligibility.
-- `architecture_job` currently succeeds at 100% because the representative target is the low-threshold local design institute fallback and the internship stub is permissive.
-- These are useful architecture signals, not final tuning. Strong-route rarity should be tuned after the representative route targets are expanded beyond the current stubs.
+- `architecture_job` still succeeds at 100% because the representative target is the low-threshold local design institute fallback. Stronger targets such as `master_studio` now expose internship and portfolio diagnostics.
+- Internships now use probabilistic applications, tier-by-tier progression, tier windows, attempt caps, and 3-week completion. Named-firm internships are no longer automatic in 100-run batches.
+- Competitions now run through four named submissions with distinct semester windows, thresholds, shortlist modifiers, and prize multipliers instead of one generic submission bucket.
+- Explicit route-target matrix verification now covers strong schools, overseas tiers, selection/civil-service/bianzhi targets, local/state-owned/foreign/master architecture jobs, and AI/game/sales/media/illustration career-change jobs.
+- These are useful architecture signals, not final tuning. Strong-route rarity should be tuned with `npm run sim:verify:route-targets` plus `npm run sim:report:route-targets`.
 
 The single-run summary includes both final attributes and hidden-route decision-time attributes. This matters because route results are cached after the year-5-upper review and revealed only after graduation design completion.
 
 Single-run and batch reports also include:
 
-- `competitionAwards` and `averageCompetitionAwardsByLevel`
-- `internshipTier` and `internshipTierDistribution`
+- `competitionSubmissionCount`, `competitionShortlistCount`, `competitionRejectionCount`, `competitionResults`, `competitionById`, and `averageCompetitionAwardsByLevel`
+- `internshipTier`, `internshipApplicationCount`, `internshipAcceptedCount`, `internshipRejectedCount`, and `internshipTierDistribution`
+- `hiddenRouteInternshipValue`, `hiddenRouteNamedFirmInternship`, and route-decision internship distributions
 - `hiddenRouteFailureReasons` and aggregated `routeFailureReasons`
 
 Event stubs currently cover phase gates, cooldowns, fixed guaranteed events, AI experience counters, model-week events, senior-year anxiety events, and graduation-memory events. They are intentionally lightweight placeholders for the full `events.md` content pool.

@@ -1,7 +1,7 @@
 import { canPerformAction } from "./actions.ts";
-import { ROUTE_THRESHOLDS, ROUTE_TIMING, STRATEGY_TUNING } from "./balance.ts";
+import { ROUTE_TARGETS, ROUTE_THRESHOLDS, ROUTE_TIMING, STRATEGY_TUNING } from "./balance.ts";
 import { isGraduationDesign, progressCapForSemester } from "./rules.ts";
-import type { ActionId, GameState, StrategyId } from "./types.ts";
+import type { ActionId, AttributeKey, GameState, RouteId, StrategyId } from "./types.ts";
 
 export function chooseAction(state: GameState, strategy: StrategyId): ActionId {
   switch (strategy) {
@@ -123,47 +123,116 @@ function routeAction(state: GameState, strategy: StrategyId): ActionId {
 
   switch (strategy) {
     case "postgrad":
-      if (state.attributes.design < ROUTE_THRESHOLDS.postgradExam.design) {
-        return firstAvailable(state, ["design_iteration", "site_research", "rest"]);
-      }
-      if (state.attributes.software < ROUTE_THRESHOLDS.postgradExam.software) return "learn_ai_software";
-      if (state.attributes.resilience < ROUTE_THRESHOLDS.postgradExam.resilience) return "exercise";
-      return firstAvailable(state, ["design_iteration", "learn_ai_software", "exercise", "rest"]);
+      return postgradAction(state);
     case "overseas":
-      if (state.portfolio < ROUTE_THRESHOLDS.overseas.portfolio) {
-        return firstAvailable(state, ["design_iteration", "site_research", "normal_drawing", "rest"]);
-      }
-      if (state.attributes.aesthetic < 65) return firstAvailable(state, ["read_exhibition", "site_research", "rest"]);
-      return firstAvailable(state, ["read_exhibition", "design_iteration", "exercise", "rest"]);
+      return overseasAction(state);
     case "civil_service":
-      if (
-        state.attributes.presentation < ROUTE_THRESHOLDS.civilService.eligible.presentation ||
-        state.attributes.social < ROUTE_THRESHOLDS.civilService.eligible.social ||
-        state.attributes.resilience < ROUTE_THRESHOLDS.civilService.eligible.resilience
-      ) {
-        return firstAvailable(state, ["public_affairs_prep", "socialize", "exercise", "rest"]);
-      }
-      return firstAvailable(state, ["public_affairs_prep", "socialize", "exercise", "rest"]);
+      return civilServiceAction(state);
     case "architecture_job":
-      if (state.attributes.design < ROUTE_THRESHOLDS.architectureJob.design) {
-        return firstAvailable(state, ["design_iteration", "site_research", "rest"]);
-      }
-      if (state.attributes.software < ROUTE_THRESHOLDS.architectureJob.software) return "learn_ai_software";
-      if (state.portfolio < ROUTE_THRESHOLDS.architectureJob.portfolioTarget) {
-        return firstAvailable(state, ["design_iteration", "site_research", "normal_drawing", "rest"]);
-      }
-      return firstAvailable(state, ["outsourcing", "learn_ai_software", "design_iteration", "rest"]);
+      return architectureJobAction(state);
     case "career_change":
-      if (
-        state.attributes.presentation < ROUTE_THRESHOLDS.careerChange.presentation ||
-        state.attributes.aesthetic < ROUTE_THRESHOLDS.careerChange.aesthetic
-      ) {
-        return firstAvailable(state, ["content_practice", "portfolio_polish", "read_exhibition", "rest"]);
-      }
-      return firstAvailable(state, ["content_practice", "socialize", "exercise", "rest"]);
+      return careerChangeAction(state);
     default:
       return balancedAction(state);
   }
+}
+
+function postgradAction(state: GameState): ActionId {
+  const thresholds = routeTargetThresholds(state, "postgrad_exam");
+  const gpaTarget = thresholds.gpa ?? ROUTE_THRESHOLDS.postgradExam.gpa;
+  const portfolioTarget = thresholds.portfolio ?? ROUTE_THRESHOLDS.postgradExam.portfolio;
+
+  if (state.gpa < gpaTarget - 0.15 || state.portfolio < portfolioTarget) {
+    return firstAvailable(state, ["design_iteration", "site_research", "normal_drawing", "rest"]);
+  }
+
+  if (state.attributes.design < (thresholds.design ?? ROUTE_THRESHOLDS.postgradExam.design)) {
+    return firstAvailable(state, ["design_iteration", "site_research", "rest"]);
+  }
+
+  if (state.attributes.software < (thresholds.software ?? ROUTE_THRESHOLDS.postgradExam.software)) {
+    return "learn_ai_software";
+  }
+
+  if (state.attributes.resilience < (thresholds.resilience ?? ROUTE_THRESHOLDS.postgradExam.resilience)) {
+    return "exercise";
+  }
+
+  return firstAvailable(state, ["design_iteration", "learn_ai_software", "exercise", "rest"]);
+}
+
+function overseasAction(state: GameState): ActionId {
+  const thresholds = routeTargetThresholds(state, "overseas");
+  const portfolioTarget = thresholds.portfolio ?? ROUTE_THRESHOLDS.overseas.portfolio;
+  const gpaTarget = thresholds.gpa ?? ROUTE_THRESHOLDS.overseas.gpa;
+
+  if (state.portfolio < portfolioTarget || state.gpa < gpaTarget - 0.1) {
+    return firstAvailable(state, ["design_iteration", "site_research", "normal_drawing", "rest"]);
+  }
+
+  if (state.attributes.aesthetic < 70) {
+    return firstAvailable(state, ["read_exhibition", "site_research", "rest"]);
+  }
+
+  return firstAvailable(state, ["read_exhibition", "design_iteration", "exercise", "rest"]);
+}
+
+function civilServiceAction(state: GameState): ActionId {
+  const thresholds = routeTargetThresholds(state, "civil_service");
+  const weakest = weakestAttributeNeed(state, thresholds, ["presentation", "social", "resilience", "design"]);
+  if (weakest === "social") return firstAvailable(state, ["socialize", "public_affairs_prep", "rest"]);
+  if (weakest === "resilience") return firstAvailable(state, ["exercise", "public_affairs_prep", "rest"]);
+  if (weakest === "design") return firstAvailable(state, ["design_iteration", "site_research", "rest"]);
+  return firstAvailable(state, ["public_affairs_prep", "socialize", "exercise", "rest"]);
+}
+
+function architectureJobAction(state: GameState): ActionId {
+  const thresholds = routeTargetThresholds(state, "architecture_job");
+
+  if (state.portfolio < (thresholds.portfolio ?? ROUTE_THRESHOLDS.architectureJob.portfolioTarget)) {
+    return firstAvailable(state, ["design_iteration", "site_research", "normal_drawing", "rest"]);
+  }
+
+  if (state.attributes.design < (thresholds.design ?? ROUTE_THRESHOLDS.architectureJob.design)) {
+    return firstAvailable(state, ["design_iteration", "site_research", "rest"]);
+  }
+
+  if (state.attributes.software < (thresholds.software ?? ROUTE_THRESHOLDS.architectureJob.software)) {
+    return "learn_ai_software";
+  }
+
+  return firstAvailable(state, ["outsourcing", "learn_ai_software", "design_iteration", "rest"]);
+}
+
+function careerChangeAction(state: GameState): ActionId {
+  const targetId = state.route.targetOverride ?? "new_media_content";
+  const thresholds = routeTargetThresholds(state, "career_change");
+
+  if (state.portfolio < (thresholds.portfolio ?? 0)) {
+    return firstAvailable(state, ["portfolio_polish", "design_iteration", "site_research", "rest"]);
+  }
+
+  if (state.attributes.software < (thresholds.software ?? 0)) {
+    return "learn_ai_software";
+  }
+
+  if ((thresholds.aiExperience ?? 0) > state.aiExperience) {
+    return "learn_ai_software";
+  }
+
+  if (state.attributes.presentation < (thresholds.presentation ?? 0)) {
+    return firstAvailable(state, ["content_practice", "presentation_practice", "socialize", "rest"]);
+  }
+
+  if (state.attributes.aesthetic < (thresholds.aesthetic ?? 0)) {
+    return firstAvailable(state, ["content_practice", "portfolio_polish", "read_exhibition", "rest"]);
+  }
+
+  if (targetId === "illustrator" || targetId === "game_scene_artist") {
+    return firstAvailable(state, ["portfolio_polish", "read_exhibition", "design_iteration", "rest"]);
+  }
+
+  return firstAvailable(state, ["content_practice", "socialize", "exercise", "rest"]);
 }
 
 function earlyRoutePrepNeed(state: GameState, strategy: StrategyId): ActionId | undefined {
@@ -191,25 +260,36 @@ function earlyRoutePrepNeed(state: GameState, strategy: StrategyId): ActionId | 
 
   switch (strategy) {
     case "civil_service":
-      if (
-        state.attributes.presentation < ROUTE_THRESHOLDS.civilService.eligible.presentation ||
-        state.attributes.social < ROUTE_THRESHOLDS.civilService.eligible.social ||
-        state.attributes.resilience < ROUTE_THRESHOLDS.civilService.eligible.resilience
-      ) {
-        return firstAvailable(state, ["public_affairs_prep", "socialize", "exercise", "rest"]);
-      }
-      return undefined;
+      return earlyCivilServicePrep(state);
     case "career_change":
-      if (
-        state.attributes.presentation < ROUTE_THRESHOLDS.careerChange.presentation ||
-        state.attributes.aesthetic < ROUTE_THRESHOLDS.careerChange.aesthetic
-      ) {
-        return firstAvailable(state, ["content_practice", "portfolio_polish", "read_exhibition", "rest"]);
-      }
-      return undefined;
+      return earlyCareerChangePrep(state);
     default:
       return undefined;
   }
+}
+
+function earlyCivilServicePrep(state: GameState): ActionId | undefined {
+  const thresholds = routeTargetThresholds(state, "civil_service");
+  const weakest = weakestAttributeNeed(state, thresholds, ["presentation", "social", "resilience", "design"]);
+  if (weakest === "social") return firstAvailable(state, ["socialize", "public_affairs_prep", "rest"]);
+  if (weakest === "resilience") return firstAvailable(state, ["exercise", "public_affairs_prep", "rest"]);
+  if (weakest === "design") return firstAvailable(state, ["design_iteration", "site_research", "rest"]);
+  if (weakest === "presentation") return firstAvailable(state, ["public_affairs_prep", "presentation_practice", "rest"]);
+  return undefined;
+}
+
+function earlyCareerChangePrep(state: GameState): ActionId | undefined {
+  const thresholds = routeTargetThresholds(state, "career_change");
+  if ((thresholds.aiExperience ?? 0) > state.aiExperience || state.attributes.software < (thresholds.software ?? 0)) {
+    return "learn_ai_software";
+  }
+  if (state.attributes.presentation < (thresholds.presentation ?? 0)) {
+    return firstAvailable(state, ["content_practice", "presentation_practice", "socialize", "rest"]);
+  }
+  if (state.attributes.aesthetic < (thresholds.aesthetic ?? 0)) {
+    return firstAvailable(state, ["content_practice", "portfolio_polish", "read_exhibition", "rest"]);
+  }
+  return undefined;
 }
 
 function courseworkQualityBuffer(strategy: StrategyId): number {
@@ -255,6 +335,50 @@ function firstAvailable(state: GameState, actions: ActionId[]): ActionId {
     }
   }
   return "rest";
+}
+
+function routeTargetThresholds(state: GameState, route: RouteId) {
+  const targetId = state.route.targetOverride ?? defaultRouteTarget(route);
+  const target = ROUTE_TARGETS[targetId];
+  if (target.route !== route) {
+    throw new Error(`Route target ${targetId} does not belong to route ${route}`);
+  }
+  return target.thresholds;
+}
+
+function defaultRouteTarget(route: RouteId) {
+  switch (route) {
+    case "postgrad_exam":
+      return "ordinary_postgrad_school";
+    case "overseas":
+      return "safe_overseas_school";
+    case "civil_service":
+      return "public_institution_general";
+    case "architecture_job":
+      return "local_design_institute";
+    case "career_change":
+      return "new_media_content";
+  }
+}
+
+function weakestAttributeNeed(
+  state: GameState,
+  thresholds: Partial<Record<AttributeKey, number>>,
+  keys: AttributeKey[],
+): AttributeKey | undefined {
+  let weakest: AttributeKey | undefined;
+  let largestGap = 0;
+
+  for (const key of keys) {
+    const required = thresholds[key] ?? 0;
+    const gap = required - state.attributes[key];
+    if (gap > largestGap) {
+      largestGap = gap;
+      weakest = key;
+    }
+  }
+
+  return weakest;
 }
 
 function requiredProgressForCurrentReview(state: GameState): number {
