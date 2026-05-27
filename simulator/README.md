@@ -8,7 +8,7 @@ This simulator is the first executable rules kernel for the core run-loop. It ha
 - four failure boundaries: money, energy, pressure, consecutive failed reviews
 - internship tier records, named competition results, and route diagnostic summaries
 
-Tuning notes and current batch baselines are tracked in `../docs/simulation-balance.md`.
+Simulation conclusions and current architecture handoff notes are tracked in `../docs/simulation-to-content-design.md`.
 
 Run one game:
 
@@ -36,6 +36,7 @@ npm run sim:verify
 npm run sim:verify:competitions
 npm run sim:verify:events
 npm run sim:verify:internships
+npm run sim:verify:internship-value
 npm run sim:verify:routes
 npm run sim:verify:route-targets
 ```
@@ -81,7 +82,7 @@ Current route-balance signals from the 100-run event batch:
 - `civil_service` fixed seed 25 currently reaches formal success, while batch runs still preserve fallback and failure outcomes through the exam roll.
 - `overseas` remains probabilistic after meeting GPA and portfolio eligibility.
 - `architecture_job` still succeeds at 100% because the representative target is the low-threshold local design institute fallback. Stronger targets such as `master_studio` now expose internship and portfolio diagnostics.
-- Internships now use probabilistic applications, tier-by-tier progression, tier windows, attempt caps, and 3-week completion. Named-firm internships are no longer automatic in 100-run batches.
+- Internships now use probabilistic applications, tier-by-tier progression, tier windows, attempt caps, and 3-week completion. Completed internships add cumulative `internshipValue`; tier progression still reads the highest completed tier so cumulative value cannot masquerade as a named-firm internship.
 - Competitions now run through four named submissions with distinct semester windows, thresholds, shortlist modifiers, and prize multipliers instead of one generic submission bucket.
 - Explicit route-target matrix verification now covers strong schools, overseas tiers, selection/civil-service/bianzhi targets, local/state-owned/foreign/master architecture jobs, and AI/game/sales/media/illustration career-change jobs.
 - These are useful architecture signals, not final tuning. Strong-route rarity should be tuned with `npm run sim:verify:route-targets` plus `npm run sim:report:route-targets`.
@@ -91,7 +92,7 @@ The single-run summary includes both final attributes and hidden-route decision-
 Single-run and batch reports also include:
 
 - `competitionSubmissionCount`, `competitionShortlistCount`, `competitionRejectionCount`, `competitionResults`, `competitionById`, and `averageCompetitionAwardsByLevel`
-- `internshipTier`, `internshipApplicationCount`, `internshipAcceptedCount`, `internshipRejectedCount`, and `internshipTierDistribution`
+- `internshipValue`, `internshipTier`, `internshipApplicationCount`, `internshipAcceptedCount`, `internshipRejectedCount`, and `internshipTierDistribution`
 - `hiddenRouteInternshipValue`, `hiddenRouteNamedFirmInternship`, and route-decision internship distributions
 - `hiddenRouteFailureReasons` and aggregated `routeFailureReasons`
 

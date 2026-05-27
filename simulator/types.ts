@@ -162,6 +162,8 @@ export type Delta = Partial<{
   money: number;
   progress: number;
   quality: number;
+  portfolio: number;
+  internshipValue: number;
   gpaModifier: number;
 } & Record<AttributeKey, number>>;
 

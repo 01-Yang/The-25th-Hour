@@ -34,6 +34,8 @@ export function applyDelta(
   state.money += adjusted.money ?? 0;
   state.progress += adjusted.progress ?? 0;
   state.quality += adjusted.quality ?? 0;
+  state.portfolio += adjusted.portfolio ?? 0;
+  state.internshipValue += adjusted.internshipValue ?? 0;
   state.gpaModifier += adjusted.gpaModifier ?? 0;
 
   for (const key of ATTRIBUTE_KEYS) {

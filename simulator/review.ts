@@ -37,7 +37,7 @@ export function resolveReview(state: GameState): ReviewRecord {
   state.reviews.push(record);
   state.gpaHistory.push(semesterGpa);
   state.gpa = average(state.gpaHistory);
-  state.portfolio += portfolioAdded;
+  applyDelta(state, "review_portfolio", `portfolio recorded: +${portfolioAdded}`, { portfolio: portfolioAdded }, "review");
 
   if (finalGrade === "F") {
     state.consecutiveFailedReviews += 1;

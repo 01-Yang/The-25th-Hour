@@ -1,6 +1,6 @@
 # 模拟结论回写文档
 
-最后更新时间：`2026-05-26 +08:00`
+最后更新时间：`2026-05-27 +08:00`
 
 ## 这份文档是干什么的
 
@@ -92,19 +92,29 @@
 
 本轮沉淀对应的是下面这些文档：
 
+- `CONTEXT.md`
+- `docs/systems.md`
 - `docs/content-plan.md`
 - `docs/events.md`
 - `docs/numbers.md`
 - `docs/endings.md`
+- `docs/adr/0002-event-schema-and-competition-result-granularity.md`
+- `docs/adr/0003-internship-value-and-tier-progression.md`
+- `simulator/README.md`
 
 其中各自承担的职责应保持稳定：
 
 | 文档 | 承担内容 |
 |---|---|
+| `CONTEXT.md` | 领域词汇，新增累计 `实习价值` 与最高实习档位的区分 |
+| `systems.md` | 系统流程、玩家可见提示边界和路线读取关系 |
 | `content-plan.md` | 玩家可见提示、结果弹窗、阶段提示 |
 | `events.md` | 实习期间短事件与短文本颗粒度 |
 | `numbers.md` | 门槛、收益、概率、实习价值规则 |
 | `endings.md` | 路线结局与结局条件口径 |
+| `adr/0002` | 竞赛玩家可见层收口为奖项结果与统一奖金提示 |
+| `adr/0003` | 记录累计 `实习价值` 与实习申请进阶的拆分 |
+| `simulator/README.md` | 可运行验证命令与当前模拟器架构信号 |
 
 ## 已复用的模拟结论
 
