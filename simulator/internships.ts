@@ -93,11 +93,13 @@ function completeInternship(state: GameState): void {
     state,
     "internship_complete",
     `internship completed: ${active.tier}`,
-    INTERNSHIP_COMPLETION_DELTAS[active.tier],
+    {
+      ...INTERNSHIP_COMPLETION_DELTAS[active.tier],
+      internshipValue: active.value,
+    },
     "week_settlement",
   );
 
-  state.internshipValue += active.value;
   state.namedFirmInternship ||= active.tier === "named_firm";
   state.internshipRecords.push({
     semesterIndex: active.startSemesterIndex,

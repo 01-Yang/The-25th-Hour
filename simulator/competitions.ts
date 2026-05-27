@@ -1,6 +1,6 @@
 import { COMPETITION_APPLICATION, COMPETITION_AWARD_TIERS, COMPETITION_POOL } from "./balance.ts";
 import { randomInt } from "./rng.ts";
-import { log } from "./resolver.ts";
+import { applyDelta } from "./resolver.ts";
 import type { CompetitionAward, CompetitionId, GameState } from "./types.ts";
 
 export function maybeRecordCompetitionAfterReview(state: GameState): void {
@@ -50,10 +50,9 @@ export function maybeRecordCompetitionAfterReview(state: GameState): void {
     prizeMoney,
   });
   state.competitionAwardCount += award === "none" ? 0 : 1;
-  state.money += prizeMoney;
-  log(state, "semester_settlement", "competition_submission", `${competition.name} ${award} recorded`, {
+  applyDelta(state, "competition_submission", `${competition.name} ${award} recorded`, {
     money: prizeMoney,
-  });
+  }, "semester_settlement");
 }
 
 function chooseCompetitionForSubmission(state: GameState): (typeof COMPETITION_POOL)[CompetitionId] | undefined {
