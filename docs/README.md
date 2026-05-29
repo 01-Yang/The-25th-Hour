@@ -16,6 +16,9 @@
 - `events.md`：事件池、事件正文和交互选项。
 - `endings.md`：人生结局、成长成就、图鉴与排行榜规则。
 - `question-banks.md`：大学课程、雅思、升学专业和行测题库。
+- `resume-system-confirmation.md`：个人简历写入范围、展示结构和待拍板问题。
+- `ending-music-and-subtitles.md`：结束曲、字幕同步、歌曲弹窗和专辑旋转规则。
+- `ui-links-guide-and-support.md`：游戏引导、BGM 设置、飞书外链和请作者喝咖啡页面。
 
 ## 开发与追溯
 
@@ -29,6 +32,9 @@
 - `numbers.md` 写“数值和结算”。
 - `technical-architecture.md` 写“首版实现路径、技术栈、存档、排行榜、部署和工程边界”。
 - `content-plan.md / events.md / endings.md / question-banks.md` 写“内容池和展示文本”。
+- `resume-system-confirmation.md` 写“个人简历展示与写入确认”，不定义路线数值。
+- `ending-music-and-subtitles.md` 写“结束曲表现、字幕和歌曲来源确认”，不保存完整商业歌词。
+- `ui-links-guide-and-support.md` 写“引导、外链和支持页面”，不进入玩法结算。
 - `content-plan.md` 中的导师阶段任务表是例外：判定条件、奖励和处罚随导师文本同表维护，并由 `numbers.md` 引用。
 - 验收项写入 `technical-architecture.md` 的“首版验收清单”；已解决问题不保留临时问题文档。
 - `decisions.md` 只做追溯和索引，不参与规则读取。

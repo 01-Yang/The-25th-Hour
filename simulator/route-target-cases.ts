@@ -29,7 +29,7 @@ export const ROUTE_TARGET_CASES: RouteTargetCase[] = [
   { strategy: "architecture_job", route: "architecture_job", target: "foreign_firm", count: 30, expectTargetSuccess: true },
   { strategy: "architecture_job", route: "architecture_job", target: "master_studio", count: 30, expectTargetSuccess: true },
   { strategy: "career_change", route: "career_change", target: "new_media_content", count: 30, expectTargetSuccess: true },
-  { strategy: "career_change", route: "career_change", target: "ai_product_manager", count: 30, expectFailure: true },
+  { strategy: "career_change", route: "career_change", target: "ai_product_manager", count: 30, expectTargetSuccess: true, expectFailure: true },
   { strategy: "career_change", route: "career_change", target: "game_scene_artist", count: 30, expectTargetSuccess: true },
   { strategy: "career_change", route: "career_change", target: "sales_business", count: 30, expectTargetSuccess: true },
   { strategy: "career_change", route: "career_change", target: "illustrator", count: 30, expectTargetSuccess: true },

@@ -443,7 +443,7 @@ export const ROUTE_TARGETS: Record<RouteTargetId, RouteTargetDefinition> = {
     route: "career_change",
     group: "career_change",
     label: "AI product manager",
-    thresholds: { software: 68, presentation: 65, aiExperience: 2 },
+    thresholds: { software: 68, presentation: 65, aiExperience: 1 },
   },
   game_scene_artist: {
     id: "game_scene_artist",
