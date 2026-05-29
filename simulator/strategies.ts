@@ -207,6 +207,33 @@ function architectureJobAction(state: GameState): ActionId {
 function careerChangeAction(state: GameState): ActionId {
   const targetId = state.route.targetOverride ?? "new_media_content";
   const thresholds = routeTargetThresholds(state, "career_change");
+  const entrepreneurshipNeeds = targetId === "entrepreneurship"
+    ? weakestAttributeNeed(state, thresholds, ["design", "software", "aesthetic", "presentation", "social", "resilience"])
+    : undefined;
+
+  if (entrepreneurshipNeeds === "design") {
+    return firstAvailable(state, ["design_iteration", "site_research", "normal_drawing", "rest"]);
+  }
+
+  if (entrepreneurshipNeeds === "software") {
+    return "learn_ai_software";
+  }
+
+  if (entrepreneurshipNeeds === "aesthetic") {
+    return firstAvailable(state, ["read_exhibition", "portfolio_polish", "content_practice", "rest"]);
+  }
+
+  if (entrepreneurshipNeeds === "presentation") {
+    return firstAvailable(state, ["content_practice", "presentation_practice", "socialize", "rest"]);
+  }
+
+  if (entrepreneurshipNeeds === "social") {
+    return firstAvailable(state, ["socialize", "public_affairs_prep", "rest"]);
+  }
+
+  if (entrepreneurshipNeeds === "resilience") {
+    return firstAvailable(state, ["exercise", "rest"]);
+  }
 
   if (state.portfolio < (thresholds.portfolio ?? 0)) {
     return firstAvailable(state, ["portfolio_polish", "design_iteration", "site_research", "rest"]);
@@ -280,6 +307,30 @@ function earlyCivilServicePrep(state: GameState): ActionId | undefined {
 
 function earlyCareerChangePrep(state: GameState): ActionId | undefined {
   const thresholds = routeTargetThresholds(state, "career_change");
+  const targetId = state.route.targetOverride ?? "new_media_content";
+  const entrepreneurshipNeeds = targetId === "entrepreneurship"
+    ? weakestAttributeNeed(state, thresholds, ["design", "software", "aesthetic", "presentation", "social", "resilience"])
+    : undefined;
+
+  if (entrepreneurshipNeeds === "design") {
+    return firstAvailable(state, ["design_iteration", "site_research", "normal_drawing", "rest"]);
+  }
+  if (entrepreneurshipNeeds === "software") {
+    return "learn_ai_software";
+  }
+  if (entrepreneurshipNeeds === "aesthetic") {
+    return firstAvailable(state, ["read_exhibition", "portfolio_polish", "content_practice", "rest"]);
+  }
+  if (entrepreneurshipNeeds === "presentation") {
+    return firstAvailable(state, ["content_practice", "presentation_practice", "socialize", "rest"]);
+  }
+  if (entrepreneurshipNeeds === "social") {
+    return firstAvailable(state, ["socialize", "public_affairs_prep", "rest"]);
+  }
+  if (entrepreneurshipNeeds === "resilience") {
+    return firstAvailable(state, ["exercise", "rest"]);
+  }
+
   if ((thresholds.aiExperience ?? 0) > state.aiExperience || state.attributes.software < (thresholds.software ?? 0)) {
     return "learn_ai_software";
   }

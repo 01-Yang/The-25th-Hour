@@ -69,7 +69,8 @@ export type RouteTargetId =
   | "game_scene_artist"
   | "sales_business"
   | "new_media_content"
-  | "illustrator";
+  | "illustrator"
+  | "entrepreneurship";
 
 export type RouteOutcome =
   | "strong_postgrad"
@@ -84,6 +85,7 @@ export type RouteOutcome =
   | "architecture_job_success"
   | "architecture_job_pending"
   | "career_change_success"
+  | "no_way_back_choice"
   | "career_change_failed";
 
 export type RouteFailureReason =
@@ -284,6 +286,11 @@ export interface EventRecord {
 export interface RouteState {
   targetOverride?: RouteTargetId;
   intention?: RouteId;
+  entrepreneurshipContract?: {
+    unlocked: boolean;
+    contractOffered: boolean;
+    contractChoice?: "signed" | "abandoned";
+  };
   formal?: {
     route: RouteId;
     group: RouteGroup;

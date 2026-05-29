@@ -182,6 +182,14 @@ export const ROUTE_THRESHOLDS = {
     presentation: 62,
     aesthetic: 65,
   },
+  entrepreneurship: {
+    design: 90,
+    software: 90,
+    aesthetic: 90,
+    presentation: 90,
+    social: 90,
+    resilience: 90,
+  },
 } as const;
 
 export type RouteTargetDefinition = {
@@ -467,6 +475,13 @@ export const ROUTE_TARGETS: Record<RouteTargetId, RouteTargetDefinition> = {
     group: "career_change",
     label: "illustrator",
     thresholds: { aesthetic: 78, portfolio: 420 },
+  },
+  entrepreneurship: {
+    id: "entrepreneurship",
+    route: "career_change",
+    group: "career_change",
+    label: "entrepreneurship",
+    thresholds: { ...ROUTE_THRESHOLDS.entrepreneurship },
   },
 } as const;
 

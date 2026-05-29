@@ -46,6 +46,8 @@ export function isTargetSuccess(testCase: RouteTargetCase, outcome: string | nul
     case "architecture_job":
       return outcome === "architecture_job_success";
     case "career_change":
-      return outcome === "career_change_success";
+      return testCase.target === "entrepreneurship"
+        ? outcome === "no_way_back_choice"
+        : outcome === "career_change_success";
   }
 }

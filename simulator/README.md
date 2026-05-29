@@ -35,6 +35,7 @@ Run core verification:
 npm run sim:verify
 npm run sim:verify:competitions
 npm run sim:verify:events
+npm run sim:verify:entrepreneurship
 npm run sim:verify:internships
 npm run sim:verify:internship-value
 npm run sim:verify:routes
@@ -54,6 +55,7 @@ Run a specific route target:
 ```bash
 npm run sim -- --seed 25 --strategy postgrad --routeTarget strong_postgrad_school --events
 npm run sim -- --strategy architecture_job --routeTarget master_studio --count 100 --events
+npm run sim -- --seed 25 --strategy career_change --routeTarget entrepreneurship --events
 ```
 
 The commands listed above are not placeholders only. They have been exercised in this worktree alongside the full verify/report suite so the README examples stay in sync with runnable behavior.
@@ -72,7 +74,7 @@ Strategies:
 - `pressure`: stresses pressure failure
 - `fail_reviews`: stresses consecutive failed review failure
 
-Route simulation covers one representative default target per route group, plus explicit `--routeTarget` overrides for stronger schools, overseas tiers, civil-service subroutes, architecture jobs, and career-change jobs. Route results are cached after the year-5-upper review. The final ending parser then reads that cached route outcome only after graduation design is complete.
+Route simulation covers one representative default target per route group, plus explicit `--routeTarget` overrides for stronger schools, overseas tiers, civil-service subroutes, architecture jobs, and career-change jobs. The special `entrepreneurship` target under `career_change` requires all six attributes to reach 90, then records the demon-contract choice before it can resolve to `no_way_back_choice`. Route results are cached after the year-5-upper review. The final ending parser then reads that cached route outcome only after graduation design is complete.
 
 Core route, route-target, internship, competition, and strategy tuning constants live in `balance.ts`.
 

@@ -38,7 +38,12 @@ export function createInitialState(seed: number, strategy: StrategyId): GameStat
     eventTally: {},
     aiExperience: 0,
     aiPracticeAwardedSemesters: [],
-    route: {},
+    route: {
+      entrepreneurshipContract: {
+        unlocked: false,
+        contractOffered: false,
+      },
+    },
     internshipValue: 0,
     namedFirmInternship: false,
     internshipApplications: [],

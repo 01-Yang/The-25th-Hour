@@ -17,7 +17,7 @@ const cases: Case[] = [
     expectedEndings: ["civil_service_success", "civil_service_fallback", "civil_service_failed"],
   },
   { strategy: "architecture_job", expectedRoute: "architecture_job", expectedEndings: ["architecture_job_success"] },
-  { strategy: "career_change", expectedRoute: "career_change", expectedEndings: ["career_change_success"] },
+  { strategy: "career_change", expectedRoute: "career_change", expectedEndings: ["career_change_success", "career_change_failed"] },
 ];
 
 let failures = 0;

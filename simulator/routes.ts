@@ -1,6 +1,6 @@
 import { randomInt } from "./rng.ts";
 import { log } from "./resolver.ts";
-import { ROUTE_TARGETS, ROUTE_THRESHOLDS, ROUTE_TIMING } from "./balance.ts";
+import { ROUTE_TARGETS, ROUTE_THRESHOLDS, ROUTE_TIMING, meetsAttributes } from "./balance.ts";
 import type {
   GameState,
   RouteFailureReason,
@@ -263,6 +263,12 @@ function resolveCareerChange(state: GameState): void {
   const target = currentRouteTarget(state, "career_change");
   const thresholds = target.thresholds;
   const failureReasons: RouteFailureReason[] = [];
+
+  if (target.id === "entrepreneurship") {
+    resolveEntrepreneurship(state);
+    return;
+  }
+
   addMinFailure(failureReasons, state.attributes.presentation, thresholds.presentation ?? 0, "presentation_below_threshold");
   addMinFailure(failureReasons, state.attributes.aesthetic, thresholds.aesthetic ?? 0, "aesthetic_below_threshold");
   addMinFailure(failureReasons, state.attributes.software, thresholds.software ?? 0, "software_below_threshold");
@@ -276,6 +282,41 @@ function resolveCareerChange(state: GameState): void {
     state.aiExperience >= (thresholds.aiExperience ?? 0);
   const outcome: RouteOutcome = passed ? "career_change_success" : "career_change_failed";
   cacheHiddenResult(state, passed, undefined, outcome, failureReasons);
+}
+
+function resolveEntrepreneurship(state: GameState): void {
+  const thresholds = ROUTE_THRESHOLDS.entrepreneurship;
+  const failureReasons: RouteFailureReason[] = [];
+  addMinFailure(failureReasons, state.attributes.design, thresholds.design, "design_below_threshold");
+  addMinFailure(failureReasons, state.attributes.software, thresholds.software, "software_below_threshold");
+  addMinFailure(failureReasons, state.attributes.aesthetic, thresholds.aesthetic, "aesthetic_below_threshold");
+  addMinFailure(failureReasons, state.attributes.presentation, thresholds.presentation, "presentation_below_threshold");
+  addMinFailure(failureReasons, state.attributes.social, thresholds.social, "social_below_threshold");
+  addMinFailure(failureReasons, state.attributes.resilience, thresholds.resilience, "resilience_below_threshold");
+
+  const unlocked = meetsAttributes(state.attributes, thresholds);
+  const contract = (state.route.entrepreneurshipContract ??= {
+    unlocked: false,
+    contractOffered: false,
+  });
+  contract.unlocked = unlocked;
+
+  if (!unlocked) {
+    cacheHiddenResult(state, false, undefined, "career_change_failed", failureReasons);
+    return;
+  }
+
+  contract.contractOffered = true;
+  contract.contractChoice ??= "signed";
+
+  const signed = contract.contractChoice === "signed";
+  cacheHiddenResult(
+    state,
+    signed,
+    undefined,
+    signed ? "no_way_back_choice" : "career_change_failed",
+    signed ? [] : failureReasons,
+  );
 }
 
 function cacheHiddenResult(
