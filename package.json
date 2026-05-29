@@ -1,0 +1,17 @@
+{
+  "name": "25thgame-simulator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sim": "node simulator/run.ts",
+    "sim:verify": "node simulator/verify.ts",
+    "sim:verify:competitions": "node simulator/verify-competitions.ts",
+    "sim:verify:events": "node simulator/verify-events.ts",
+    "sim:verify:entrepreneurship": "node simulator/verify-entrepreneurship.ts",
+    "sim:verify:internships": "node simulator/verify-internships.ts",
+    "sim:verify:internship-value": "node simulator/verify-internship-value.ts",
+    "sim:verify:routes": "node simulator/verify-routes.ts",
+    "sim:verify:route-targets": "node simulator/verify-route-targets.ts"
+  }
+}
