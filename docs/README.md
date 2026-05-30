@@ -24,7 +24,7 @@
 - `technical-architecture.md`：技术实现决策源，不定义玩法数值或内容正文。
 - `decisions.md`：关键决策追溯，不作为现行规则源。
 - `core-questions.md`：核心问题归档；已拍板口径已并入正式规则文档，不作为独立规则源。
-- `resume-system-confirmation.md`：简历系统旧确认稿，稳定口径已并入 `systems.md`。
+- `resume-system-confirmation.md`：简历系统历史归档，稳定口径已并入 `systems.md`。
 
 ## 分工规则
 

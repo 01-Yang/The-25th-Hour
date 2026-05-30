@@ -152,7 +152,7 @@
 - `technical-architecture.md` 记录技术实现边界与首版验收清单。
 - `decisions.md` 只保留关键决策追溯，不作为现行规则源。
 - `core-questions.md` 只保留核心问题归档；已拍板口径以 `systems.md / numbers.md / technical-architecture.md / 内容文档` 为准。
-- `resume-system-confirmation.md` 若仍存在，只视为旧确认稿；稳定口径以 `systems.md` 的个人简历章节为准。
+- `resume-system-confirmation.md` 若仍存在，只视为历史归档；稳定口径以 `systems.md` 的个人简历章节为准。
 
 ## 冲突处理
 
