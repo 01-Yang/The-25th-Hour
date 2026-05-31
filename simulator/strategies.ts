@@ -142,7 +142,7 @@ function postgradAction(state: GameState): ActionId {
   const gpaTarget = thresholds.gpa ?? ROUTE_THRESHOLDS.postgradExam.gpa;
   const portfolioTarget = thresholds.portfolio ?? ROUTE_THRESHOLDS.postgradExam.portfolio;
 
-  if (state.gpa < gpaTarget - 0.15 || state.portfolio < portfolioTarget) {
+  if ((state.gpa ?? 0) < gpaTarget - 0.15 || state.portfolio < portfolioTarget) {
     return firstAvailable(state, ["design_iteration", "site_research", "normal_drawing", "rest"]);
   }
 
@@ -166,7 +166,7 @@ function overseasAction(state: GameState): ActionId {
   const portfolioTarget = thresholds.portfolio ?? ROUTE_THRESHOLDS.overseas.portfolio;
   const gpaTarget = thresholds.gpa ?? ROUTE_THRESHOLDS.overseas.gpa;
 
-  if (state.portfolio < portfolioTarget || state.gpa < gpaTarget - 0.1) {
+  if (state.portfolio < portfolioTarget || (state.gpa ?? 0) < gpaTarget - 0.1) {
     return firstAvailable(state, ["design_iteration", "site_research", "normal_drawing", "rest"]);
   }
 

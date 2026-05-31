@@ -68,7 +68,7 @@ export function snapshot(state: GameState): StateSnapshot {
     money: state.money,
     progress: state.progress,
     quality: state.quality,
-    gpa: round(state.gpa, 2),
+    gpa: state.gpa === null ? null : round(state.gpa, 2),
     portfolio: state.portfolio,
     consecutiveFailedReviews: state.consecutiveFailedReviews,
     ending: state.ending,

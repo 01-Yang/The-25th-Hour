@@ -19,7 +19,7 @@ export const INITIAL_STATE = {
   maxEnergy: 100,
   pressure: 20,
   money: 2000,
-  gpa: 4.0,
+  gpa: null,
 };
 
 export const MONTHLY_ALLOWANCE = 2000;
@@ -150,8 +150,8 @@ export const GRADE_TO_PORTFOLIO: Record<ReviewGrade, number> = {
   S: 110,
   A: 95,
   B: 78,
-  C: 60,
-  D: 42,
+  C: 0,
+  D: 0,
   F: 0,
 };
 
