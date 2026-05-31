@@ -216,7 +216,7 @@ export function summarize(state: GameState) {
     ending: state.ending,
     failureReason: state.failureReason ?? null,
     weeks: state.week,
-    gpa: Number(state.gpa.toFixed(2)),
+    gpa: state.gpa === null ? null : Number(state.gpa.toFixed(2)),
     portfolio: state.portfolio,
     eventCount: state.eventRecords.length,
     aiExperience: state.aiExperience,
@@ -299,6 +299,7 @@ export function runBatch(
 export function aggregate(results: ReturnType<typeof summarize>[]) {
   const endings: Record<string, number> = {};
   let totalGpa = 0;
+  let gpaCount = 0;
   let totalPortfolio = 0;
   let totalWeeks = 0;
   let totalEvents = 0;
@@ -354,7 +355,10 @@ export function aggregate(results: ReturnType<typeof summarize>[]) {
 
   for (const result of results) {
     endings[result.ending ?? "unknown"] = (endings[result.ending ?? "unknown"] ?? 0) + 1;
-    totalGpa += result.gpa;
+    if (result.gpa !== null) {
+      totalGpa += result.gpa;
+      gpaCount += 1;
+    }
     totalPortfolio += result.portfolio;
     totalWeeks += result.weeks;
     totalEvents += result.eventCount;
@@ -419,7 +423,7 @@ export function aggregate(results: ReturnType<typeof summarize>[]) {
   return {
     count: results.length,
     endings,
-    averageGpa: Number((totalGpa / results.length).toFixed(2)),
+    averageGpa: gpaCount > 0 ? Number((totalGpa / gpaCount).toFixed(2)) : null,
     averagePortfolio: Number((totalPortfolio / results.length).toFixed(2)),
     averageWeeks: Number((totalWeeks / results.length).toFixed(2)),
     averageEvents: Number((totalEvents / results.length).toFixed(2)),
