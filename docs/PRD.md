@@ -1,6 +1,6 @@
 # 第二十五小时：建筑生模拟器 PRD
 
-本文是项目的产品与架构总览，也承接开发前冻结口径。它只说明目标、边界、主系统关系和文档优先级；具体规则、数值和内容分别由 `systems.md`、`numbers.md`、`events.md`、`endings.md`、`content-plan.md`、`question-banks.md` 维护。
+本文是项目的产品与架构总览，也承接开发前冻结口径。它只说明目标、边界、主系统关系和文档优先级；具体规则、数值、内容和技术实现分别由 `systems.md`、`numbers.md`、内容文档和 `technical-architecture.md` 维护。
 
 ## 产品定义
 
@@ -152,13 +152,17 @@
 - 例外：导师阶段任务表的判定条件、奖励和处罚随导师文本维护在 `content-plan.md`，并由 `numbers.md` 明确引用。
 - `technical-architecture.md` 记录技术实现边界与首版验收清单。
 - `decisions.md` 只保留关键决策追溯，不作为现行规则源。
+- `core-questions.md` 只保留核心问题归档；已拍板口径以 `systems.md / numbers.md / technical-architecture.md / 内容文档` 为准。
+- `resume-system-confirmation.md` 若仍存在，只视为历史归档；稳定口径以 `systems.md` 的个人简历章节为准。
 
 ## 冲突处理
 
-若文档之间出现冲突，按以下顺序处理：
+玩法、数值和内容冲突按以下顺序处理：
 
 1. `PRD.md`
 2. `systems.md`
 3. `numbers.md`
 4. 内容文档
 5. `decisions.md`
+
+技术实现冲突以 `technical-architecture.md` 为准，但不得覆盖 `PRD.md / systems.md / numbers.md` 已确定的玩法规则。
