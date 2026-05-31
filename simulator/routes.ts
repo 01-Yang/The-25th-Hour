@@ -130,7 +130,8 @@ function resolvePostgradExam(state: GameState): void {
   const target = currentRouteTarget(state, "postgrad_exam");
   const thresholds = target.thresholds;
   const failureReasons: RouteFailureReason[] = [];
-  addMinFailure(failureReasons, state.gpa, thresholds.gpa ?? 0, "gpa_below_threshold");
+  const gpa = knownGpa(state);
+  addMinFailure(failureReasons, gpa, thresholds.gpa ?? 0, "gpa_below_threshold");
   addMinFailure(failureReasons, state.portfolio, thresholds.portfolio ?? 0, "portfolio_below_threshold");
   addMinFailure(failureReasons, state.attributes.design, thresholds.design ?? 0, "design_below_threshold");
   addMinFailure(failureReasons, state.attributes.software, thresholds.software ?? 0, "software_below_threshold");
@@ -139,7 +140,7 @@ function resolvePostgradExam(state: GameState): void {
     failureReasons.push("recent_failed_reviews_above_threshold");
   }
   const eligible =
-    state.gpa >= (thresholds.gpa ?? 0) &&
+    gpa >= (thresholds.gpa ?? 0) &&
     state.portfolio >= (thresholds.portfolio ?? 0) &&
     state.attributes.design >= (thresholds.design ?? 0) &&
     state.attributes.software >= (thresholds.software ?? 0) &&
@@ -174,12 +175,13 @@ function resolveOverseasApplication(state: GameState): void {
     gpaExcessForGuaranteed: 0.25,
   };
   const failureReasons: RouteFailureReason[] = [];
-  addMinFailure(failureReasons, state.gpa, thresholds.gpa ?? 0, "gpa_below_threshold");
+  const gpa = knownGpa(state);
+  addMinFailure(failureReasons, gpa, thresholds.gpa ?? 0, "gpa_below_threshold");
   addMinFailure(failureReasons, state.portfolio, thresholds.portfolio ?? 0, "portfolio_below_threshold");
-  const eligible = state.gpa >= (thresholds.gpa ?? 0) && state.portfolio >= (thresholds.portfolio ?? 0);
+  const eligible = gpa >= (thresholds.gpa ?? 0) && state.portfolio >= (thresholds.portfolio ?? 0);
   const chance = eligible
     ? state.portfolio >= (thresholds.portfolio ?? 0) + chanceRules.portfolioExcessForGuaranteed &&
-      state.gpa >= (thresholds.gpa ?? 0) + chanceRules.gpaExcessForGuaranteed
+      gpa >= (thresholds.gpa ?? 0) + chanceRules.gpaExcessForGuaranteed
       ? 1
       : Math.min(
           chanceRules.max,
@@ -205,7 +207,8 @@ function resolveCivilServiceExam(state: GameState): void {
   const target = currentRouteTarget(state, "civil_service");
   const thresholds = target.thresholds;
   const failureReasons: RouteFailureReason[] = [];
-  addMinFailure(failureReasons, state.gpa, thresholds.gpa ?? 0, "gpa_below_threshold");
+  const gpa = knownGpa(state);
+  addMinFailure(failureReasons, gpa, thresholds.gpa ?? 0, "gpa_below_threshold");
   addMinFailure(failureReasons, state.attributes.presentation, thresholds.presentation ?? 0, "presentation_below_threshold");
   addMinFailure(failureReasons, state.attributes.social, thresholds.social ?? 0, "social_below_threshold");
   addMinFailure(failureReasons, state.attributes.resilience, thresholds.resilience ?? 0, "resilience_below_threshold");
@@ -214,7 +217,7 @@ function resolveCivilServiceExam(state: GameState): void {
     failureReasons.push("recent_failed_reviews_above_threshold");
   }
   const eligible =
-    state.gpa >= (thresholds.gpa ?? 0) &&
+    gpa >= (thresholds.gpa ?? 0) &&
     state.attributes.presentation >= (thresholds.presentation ?? 0) &&
     state.attributes.social >= (thresholds.social ?? 0) &&
     state.attributes.resilience >= (thresholds.resilience ?? 0) &&
@@ -338,7 +341,7 @@ function cacheHiddenResult(
     score,
     outcome,
     attributesAtDecision: { ...state.attributes },
-    gpaAtDecision: Number(state.gpa.toFixed(2)),
+    gpaAtDecision: Number(knownGpa(state).toFixed(2)),
     portfolioAtDecision: state.portfolio,
     internshipValueAtDecision: state.internshipValue,
     namedFirmInternshipAtDecision: state.namedFirmInternship,
@@ -393,6 +396,10 @@ function addMinFailure(
   if (actual < required) {
     failureReasons.push(reason);
   }
+}
+
+function knownGpa(state: GameState): number {
+  return state.gpa ?? Number.NEGATIVE_INFINITY;
 }
 
 function targetForRoute(state: GameState, route: RouteId): RouteTargetId {

@@ -333,7 +333,7 @@ export interface StateSnapshot {
   money: number;
   progress: number;
   quality: number;
-  gpa: number;
+  gpa: number | null;
   portfolio: number;
   consecutiveFailedReviews: number;
   ending?: EndingId;
@@ -356,7 +356,7 @@ export interface GameState {
   maxEnergy: number;
   pressure: number;
   money: number;
-  gpa: number;
+  gpa: number | null;
   gpaHistory: number[];
   gpaModifier: number;
   selectedCourse?: CourseId;
