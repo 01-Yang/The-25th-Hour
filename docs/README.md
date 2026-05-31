@@ -19,12 +19,18 @@
 - `ending-music-and-subtitles.md`：结束曲、授权歌词字幕、歌曲弹窗和专辑视觉。
 - `ui-links-guide-and-support.md`：游戏引导、外链和支持页面。
 
-## 开发与追溯
+## 技术实现
 
 - `technical-architecture.md`：技术实现决策源，不定义玩法数值或内容正文。
-- `decisions.md`：关键决策追溯，不作为现行规则源。
-- `core-questions.md`：核心问题归档；已拍板口径已并入正式规则文档，不作为独立规则源。
-- `resume-system-confirmation.md`：简历系统历史归档，稳定口径已并入 `systems.md`。
+
+## 当前技术落地口径
+
+- 当前开发先收口文档和正式规则内核，再接粗糙 UI。
+- 粗糙 UI 只用于试玩和验证流程，不作为规则源，也不作为最终视觉方向。
+- 正式实现以 `game-core / game-data / app/view-model / app/ui / storage / api` 分层推进。
+- 部署目标为 `Vercel Hobby + Cloudflare 免费层`；静态主程序走 `Vercel`，大文件走 `R2`，排行榜走 `Workers + D1`。
+- 当前发布流程优先依赖 `GitHub main -> Vercel Production` 自动化；`dev / staging / production` 三环境隔离作为后续工程目标。
+- 排行榜是首发唯一云端能力，接口和存储口径读取 `technical-architecture.md`。
 
 ## 分工规则
 
@@ -40,5 +46,5 @@
 2. `systems.md`
 3. `numbers.md`
 4. 内容文档
-5. `technical-architecture.md`
-6. `decisions.md`
+
+技术实现冲突时，以 `technical-architecture.md` 为准；但技术文档不得覆盖 `PRD.md / systems.md / numbers.md` 已确定的玩法规则。

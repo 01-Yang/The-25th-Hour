@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 820" role="img" aria-labelledby="title desc">
+  <title id="title">建筑学院工作室桌面</title>
+  <desc id="desc">夜晚工作室里的桌面、图纸、台灯和模型材料。</desc>
+  <defs>
+    <linearGradient id="wall" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#334b59"/>
+      <stop offset="1" stop-color="#1f2933"/>
+    </linearGradient>
+    <linearGradient id="desk" x1="0" x2="1">
+      <stop offset="0" stop-color="#607469"/>
+      <stop offset="1" stop-color="#334640"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+  </defs>
+  <rect width="1400" height="820" fill="url(#wall)"/>
+  <circle cx="1020" cy="210" r="230" fill="#e99d52" opacity=".2" filter="url(#soft)"/>
+  <rect x="0" y="520" width="1400" height="300" fill="url(#desk)"/>
+  <path d="M0 520h1400" stroke="#9ab2a8" stroke-width="2" opacity=".35"/>
+  <g opacity=".92">
+    <path d="M226 318h386l88 258H298z" fill="#e7ece8"/>
+    <path d="M268 358h260M280 402h280M292 447h312M305 492h266" stroke="#73847f" stroke-width="5" stroke-linecap="round" opacity=".65"/>
+    <path d="M390 371l106 86-66 72-108-86z" fill="none" stroke="#3e6d78" stroke-width="7"/>
+    <path d="M468 394l65 52-43 46-65-52z" fill="none" stroke="#c46e48" stroke-width="5"/>
+  </g>
+  <g transform="translate(790 375)">
+    <path d="M0 184h310l-54-144H48z" fill="#d7d5c8"/>
+    <path d="M58 40h198l54 144H112z" fill="#f0eee1"/>
+    <path d="M80 70h70v90H80zM170 70h62v90h-62z" fill="#8fb8aa"/>
+    <path d="M80 70l90-42 62 42M150 160l82-90" fill="none" stroke="#43645f" stroke-width="7" stroke-linejoin="round"/>
+  </g>
+  <g transform="translate(945 128)">
+    <path d="M90 390V120" stroke="#304342" stroke-width="18" stroke-linecap="round"/>
+    <path d="M90 120l156 84" stroke="#304342" stroke-width="18" stroke-linecap="round"/>
+    <path d="M236 197c52 17 87 56 90 103l-204 24c-9-55 36-109 114-127z" fill="#f1b25d"/>
+    <path d="M128 326c54 25 126 18 196-22" stroke="#ffe1a8" stroke-width="10" opacity=".45"/>
+  </g>
+  <g opacity=".75">
+    <rect x="120" y="610" width="190" height="28" rx="8" fill="#243532"/>
+    <rect x="1040" y="614" width="210" height="32" rx="8" fill="#243532"/>
+    <rect x="1070" y="660" width="120" height="18" rx="6" fill="#d56f4a"/>
+    <rect x="112" y="660" width="150" height="18" rx="6" fill="#e0a24f"/>
+  </g>
+</svg>

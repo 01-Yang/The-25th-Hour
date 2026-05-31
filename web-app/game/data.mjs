@@ -1,0 +1,715 @@
+export const SAVE_VERSION = "docs-core-v1";
+
+export const WEEKS_PER_SEMESTER = 6;
+export const SEMESTER_COUNT = 10;
+export const BASE_ACTIONS_PER_WEEK = 3;
+
+export const ATTRIBUTE_KEYS = [
+  "design",
+  "software",
+  "aesthetic",
+  "presentation",
+  "social",
+  "resilience",
+];
+
+export const ATTRIBUTE_LABELS = {
+  design: "设计水平",
+  software: "软件技术",
+  aesthetic: "创意审美",
+  presentation: "汇报表达",
+  social: "人际交往",
+  resilience: "抗压能力",
+};
+
+export const STAT_LABELS = {
+  energy: "精力",
+  pressure: "压力",
+  money: "金钱",
+  progress: "课题进度",
+  quality: "作品质量",
+  gpa: "个人 GPA",
+  portfolio: "作品集总分",
+};
+
+export const FAMILY_BACKGROUNDS = {
+  poor: { id: "poor", label: "贫寒", monthlyAllowance: 1000, initialMoney: 1000, weeklyLivingCost: 200 },
+  ordinary: { id: "ordinary", label: "普通", monthlyAllowance: 2000, initialMoney: 2000, weeklyLivingCost: 400 },
+  academic: { id: "academic", label: "院士子女", monthlyAllowance: 5000, initialMoney: 5000, weeklyLivingCost: 1000 },
+  wealthy: { id: "wealthy", label: "富二代", monthlyAllowance: 10000, initialMoney: 10000, weeklyLivingCost: 2000 },
+};
+
+export const EDUCATION_BACKGROUNDS = {
+  non_key: { id: "non_key", label: "双非" },
+  ordinary_first: { id: "ordinary_first", label: "普通一本" },
+  double_first_class: { id: "double_first_class", label: "双一流" },
+  old_eight: { id: "old_eight", label: "建筑老八校" },
+  junior_college: { id: "junior_college", label: "大专" },
+};
+
+export const CHARACTERS = [
+  {
+    id: "ordinary_person",
+    name: "普通人",
+    educationId: "ordinary_first",
+    familyId: "ordinary",
+    intro: "你是建院里最不起眼的那一个，就像专教里那把没人抢的椅子，一直在那儿，不声不响。",
+    passiveName: "无被动",
+    passiveText: "最标准的基准角色。",
+    skillName: "放平心态",
+    skillText: "精力 +10，压力 -10。",
+    pressure: 20,
+    attributes: { design: 28, software: 26, aesthetic: 28, presentation: 26, social: 28, resilience: 28 },
+    skill: { delta: { energy: 10, pressure: -10 } },
+  },
+  {
+    id: "mixed_in",
+    name: "混得入",
+    educationId: "non_key",
+    familyId: "ordinary",
+    intro: "你高考掉档来了双非，但你是真的不在乎。交图周别人通宵，你也在通宵：打游戏。",
+    passiveName: "浑水摸鱼",
+    passiveText: "每学期最多触发 1 次，低进度或低质量时抵消后续最多 2 次事件压力增加。",
+    skillName: "原地开摆",
+    skillText: "本学期评图进度硬门槛 -6，作品质量 F 门槛 -6，本学期最高评图等级锁定为 B。",
+    pressure: 16,
+    attributes: { design: 22, software: 24, aesthetic: 24, presentation: 22, social: 32, resilience: 26 },
+    skill: { reviewEase: { progressGate: -6, qualityFGate: -6, maxGrade: "B" } },
+  },
+  {
+    id: "pressure_immune",
+    name: "不吃压力之人",
+    educationId: "ordinary_first",
+    familyId: "ordinary",
+    intro: "你是那种评图被批得再惨，也能笑着跟老师说“那我回去改改”的人。",
+    passiveName: "钝感力",
+    passiveText: "一切来源的压力增量 -1，单次压力增量最低仍为 +1。",
+    skillName: "睡醒再说",
+    skillText: "精力 +8，压力 -12。",
+    pressure: 12,
+    attributes: { design: 26, software: 24, aesthetic: 26, presentation: 26, social: 28, resilience: 40 },
+    skill: { delta: { energy: 8, pressure: -12 } },
+  },
+  {
+    id: "design_enabler",
+    name: "设计赋能哥",
+    educationId: "double_first_class",
+    familyId: "ordinary",
+    intro: "你在设计上有开挂的天赋，同样一个题目，别人还在排功能，你已经随手画出三版空间方案。",
+    passiveName: "大师附体",
+    passiveText: "汇报策略成功时作品分额外 +3；失败时作品分少扣 1 分。",
+    skillName: "降维打击",
+    skillText: "进度 +5，作品质量 +5，压力 +10，精力 -10。",
+    pressure: 22,
+    attributes: { design: 45, software: 28, aesthetic: 38, presentation: 30, social: 26, resilience: 26 },
+    skill: { delta: { progress: 5, quality: 5, pressure: 10, energy: -10 } },
+  },
+  {
+    id: "poor_scholar",
+    name: "寒门贵子",
+    educationId: "old_eight",
+    familyId: "poor",
+    intro: "你是村里第一个考上名校的。你不太说这些，只是把学费和期待都压进书包最里层。",
+    passiveName: "爸妈的希望",
+    passiveText: "学习类和推进类行动的主要正向收益 +1；所有涉及压力增加的结算额外压力 +1。",
+    skillName: "逆天改命",
+    skillText: "进度 +9，作品质量 +3，精力 -12，压力 +8。",
+    pressure: 28,
+    attributes: { design: 30, software: 26, aesthetic: 28, presentation: 24, social: 24, resilience: 36 },
+    skill: { delta: { progress: 9, quality: 3, energy: -12, pressure: 8 } },
+  },
+  {
+    id: "full_pressure",
+    name: "吃满压力之人",
+    educationId: "non_key",
+    familyId: "poor",
+    intro: "你是大专生，家里穷得连上学路费都是找邻居凑的。你沉默地打工、上课、赶图。",
+    passiveName: "坚韧不拔",
+    passiveText: "压力 >= 70 时，画图进度收益 +2，方案推敲作品质量 +2。",
+    skillName: "背水一战",
+    skillText: "仅当压力 >= 70 可用：进度 +12，精力 -13，压力 +5。",
+    pressure: 38,
+    attributes: { design: 22, software: 22, aesthetic: 24, presentation: 20, social: 24, resilience: 44 },
+    skill: { delta: { progress: 12, energy: -13, pressure: 5 }, require: { pressureMin: 70 } },
+  },
+  {
+    id: "future_boss",
+    name: "未来的老板",
+    educationId: "ordinary_first",
+    familyId: "wealthy",
+    intro: "你家是开建材公司的，而你似乎也是那种天生会做生意的人。",
+    passiveName: "商业嗅觉",
+    passiveText: "接设计外包收入额外 +200，校外兼职收入额外 +100。",
+    skillName: "钞能力启动",
+    skillText: "金钱 -3000，进度 +7，作品质量 +5。",
+    pressure: 18,
+    attributes: { design: 26, software: 26, aesthetic: 24, presentation: 30, social: 42, resilience: 30 },
+    skill: { delta: { money: -3000, progress: 7, quality: 5 } },
+  },
+  {
+    id: "born_lucky",
+    name: "投胎专家",
+    educationId: "junior_college",
+    familyId: "wealthy",
+    intro: "你的高考分数只能上专科，但你爸说了“建筑这行看人脉”。你从来不为钱发愁。",
+    passiveName: "松弛感",
+    passiveText: "压力 >= 70 时自动减少 5 点压力；每局最多触发 2 次。",
+    skillName: "钞能力启动",
+    skillText: "金钱 -2000，作品质量 +6，压力 -4。",
+    pressure: 10,
+    attributes: { design: 20, software: 22, aesthetic: 24, presentation: 28, social: 38, resilience: 28 },
+    skill: { delta: { money: -2000, quality: 6, pressure: -4 } },
+  },
+  {
+    id: "gene_rebel",
+    name: "基因叛逆者",
+    educationId: "ordinary_first",
+    familyId: "academic",
+    intro: "你是院士家的“废柴”。你对自己说：当不了接班人，就当个普通人吧。",
+    passiveName: "爸妈的资源",
+    passiveText: "实习解锁门槛降低，但实习触发后压力会反弹。",
+    skillName: "爸妈救我",
+    skillText: "金钱 +1000，压力 +5，进度 +2，作品质量 +10。",
+    pressure: 26,
+    attributes: { design: 26, software: 26, aesthetic: 28, presentation: 24, social: 24, resilience: 26 },
+    skill: { delta: { money: 1000, pressure: 5, progress: 2, quality: 10 } },
+  },
+  {
+    id: "town_exam_ace",
+    name: "小镇做题家",
+    educationId: "old_eight",
+    familyId: "ordinary",
+    intro: "你是县城一中出来的，高考排名全校第一。你擅长把任何知识点变成笔记和题库。",
+    passiveName: "应试天赋",
+    passiveText: "课程题答对 1 题时，本学期 GPA 修正按 0 结算。",
+    skillName: "回到高中",
+    skillText: "进度 +8，精力 -8，压力 +8，GPA 学期修正 +0.10。",
+    pressure: 24,
+    attributes: { design: 34, software: 28, aesthetic: 28, presentation: 28, social: 24, resilience: 36 },
+    skill: { delta: { progress: 8, energy: -8, pressure: 8, gpaModifier: 0.1 } },
+  },
+  {
+    id: "corbusier_heir",
+    name: "柯布西耶继承者",
+    educationId: "old_eight",
+    familyId: "academic",
+    intro: "你从小跟着父母出入各种学术会议，见过的建筑大师比同学认识的明星还多。",
+    passiveName: "爸妈的资源",
+    passiveText: "实习门槛降低；每次汇报压力额外 +3。",
+    skillName: "爸妈救我",
+    skillText: "金钱 +1000，作品质量 +10，压力 +5，进度 +2。",
+    pressure: 30,
+    attributes: { design: 42, software: 30, aesthetic: 40, presentation: 36, social: 30, resilience: 28 },
+    skill: { delta: { money: 1000, quality: 10, pressure: 5, progress: 2 } },
+  },
+];
+
+export const MENTORS = [
+  {
+    id: "mentor_wang",
+    name: "王老师",
+    title: "景观实践大师",
+    intro: "他手上的公园落地项目比你走过的桥还多。",
+    task: {
+      name: "走向实践",
+      conditionText: "接设计外包 >= 2 且场地调研 >= 3",
+      successText: "你的方案终于沾上了一点真实城市的灰。",
+      failureText: "场地分析全是卫星图截图，连最基本的指北针方向都画反了。",
+      reward: { quality: 4, design: 2 },
+      penalty: { pressure: 4, quality: -4, design: -2 },
+    },
+  },
+  {
+    id: "mentor_ge",
+    name: "戈老师",
+    title: "高级学院派",
+    intro: "她讲理论不爱甩大词，批评人也是轻声的。",
+    task: {
+      name: "理论支撑",
+      conditionText: "方案推敲 >= 3 且阅读/展览/讲座 >= 3",
+      successText: "你的概念终于不再是漂亮但空洞的词汇。",
+      failureText: "你的理论不过是遮羞布，用来掩盖你没有想清楚的事实。",
+      reward: { quality: 3, gpaModifier: 0.2, aesthetic: 2 },
+      penalty: { quality: -3, gpaModifier: -0.5, pressure: 4, design: -2, aesthetic: -2 },
+    },
+  },
+  {
+    id: "mentor_lin",
+    name: "林老师",
+    title: "高压审美者",
+    intro: "她眼里只有两种图：能挂墙上的和不能看的。",
+    task: {
+      name: "磨到能看",
+      conditionText: "作品质量 >= 75 且方案推敲 >= 5",
+      successText: "立面上的每根线都有了理由。",
+      failureText: "线条乱得像施工队的垃圾草稿，重画。",
+      reward: { quality: 5, design: 1, resilience: 2 },
+      penalty: { pressure: 10, quality: -2, design: -3 },
+    },
+  },
+  {
+    id: "mentor_chen",
+    name: "陈老师",
+    title: "理想主义者",
+    intro: "陈老师最爱聊“人”。你炫参数化表皮，他问“这儿有人坐吗”。",
+    task: {
+      name: "以人为本",
+      conditionText: "场地调研 >= 3 且阅读/展览/讲座 >= 2",
+      successText: "你的图纸开始真的考虑谁会使用这个空间。",
+      failureText: "这个建筑里的人在哪里？",
+      reward: { quality: 4, aesthetic: 2 },
+      penalty: { pressure: 4, quality: -1, design: -2 },
+    },
+  },
+  {
+    id: "mentor_zhou",
+    name: "周老师",
+    title: "软件技术大神",
+    intro: "Rhino 更新比你快，AI 出图比你溜。",
+    task: {
+      name: "技术爆炸",
+      conditionText: "学习AI和设计软件 >= 3 且本学期软件技术成长 >= 15",
+      successText: "这才叫技术辅助设计，不是技术替代设计。",
+      failureText: "你的设计软件在进步，你的大脑在退步。",
+      reward: { software: 2, quality: 3 },
+      penalty: { pressure: 3, quality: -1, software: -3 },
+    },
+  },
+  {
+    id: "mentor_xu",
+    name: "许老师",
+    title: "佛系放养家",
+    intro: "你不找她她绝不找你。她回个“可”，已经是认可。",
+    task: {
+      name: "稳住节奏",
+      conditionText: "第 5 周结束前进度 >= 95 且评图时压力 < 70",
+      successText: "你提前一周把全套图纸发给了许老师。",
+      failureText: "自由不是放任，你早三周找我，就不会这样了。",
+      reward: { pressure: -6, resilience: 2, quality: 1 },
+      penalty: { pressure: 3, quality: -2 },
+    },
+  },
+  {
+    id: "mentor_han",
+    name: "韩老师",
+    title: "竞赛压力怪",
+    intro: "她的要求只有两字：拿奖。",
+    task: {
+      name: "竞赛狂魔",
+      conditionText: "作品质量 >= 85 或竞赛投稿 >= 1",
+      successText: "这张图的建构深度已经到了职业水准。",
+      failureText: "如果连你自己都说不出非你不可的理由，评委也不会替你找。",
+      reward: { design: 3, quality: 4, resilience: 2 },
+      penalty: { pressure: 10, quality: -2, design: -2 },
+    },
+  },
+];
+
+export const SEMESTER_TOPICS = [
+  "盒子空间设计",
+  "校园咖啡馆设计",
+  "山地旅馆设计",
+  "社区活动中心设计",
+  "大跨度体育馆设计",
+  "滨水文化博物馆设计",
+  "高层综合性办公楼设计",
+  "医疗康养综合体设计",
+  "毕业设计期中汇报",
+  "毕业设计毕业答辩",
+];
+
+export const COURSES = [
+  { id: "architecture_history", name: "建筑史论", delta: { aesthetic: 2 }, context: "理论、阅读、讲座、名作讨论" },
+  { id: "building_construction", name: "建筑构造", delta: { design: 2 }, context: "节点、细部、返工、老师抓细节" },
+  { id: "digital_planning", name: "数字规划", delta: { software: 2, design: 1 }, context: "参数化、分析图、数字工作流" },
+  { id: "cad", name: "计算机辅助设计", delta: { software: 2 }, context: "建模、制图、插件、电脑故障" },
+  { id: "mechanics", name: "建筑力学", delta: { design: 1, resilience: 1 }, context: "小测、公式、挂科预警、结构压力" },
+  { id: "representation", name: "建筑表现基础", delta: { aesthetic: 2, software: 1 }, context: "图面表达、渲染、风格选择" },
+  { id: "drafting", name: "建筑制图", delta: { software: 1, design: 1 }, context: "轴网、线型、出图、规范表达" },
+  { id: "presentation", name: "表达与汇报", delta: { presentation: 2 }, context: "PPT、口头表达、评图追问、临场发挥" },
+  { id: "aesthetics", name: "建筑美学", delta: { aesthetic: 2, presentation: 1 }, context: "大师作品、设计理念、空间审美" },
+  { id: "garden_history", name: "园林史论", delta: { aesthetic: 2, design: 1 }, context: "中国园林、外国园林、造园理念" },
+];
+
+export const COURSE_QUESTIONS = {
+  architecture_history: [
+    { q: "“少即是多”最常关联哪位建筑师？", options: { A: "勒·柯布西耶", B: "密斯·凡·德·罗", C: "阿尔托", D: "路易斯·康" }, answer: "B" },
+    { q: "萨伏伊别墅最常被视为哪一建筑思想的代表？", options: { A: "现代主义", B: "哥特复兴", C: "解构主义", D: "后现代主义" }, answer: "A" },
+    { q: "包豪斯的核心气质更接近：", options: { A: "装饰优先", B: "艺术、工艺与工业结合", C: "历史复古", D: "手工排斥机器" }, answer: "B" },
+  ],
+  building_construction: [
+    { q: "倒置式屋面的构造特征是：", options: { A: "保温层设于防水层上部", B: "保温层设于结构层下部", C: "防水层设于保温层上部", D: "找坡层设于保护层上部" }, answer: "A" },
+    { q: "建筑伸缩缝设置的首要目的是解决：", options: { A: "地基不均匀沉降", B: "温度变形", C: "风荷载过大", D: "材料成本过高" }, answer: "B" },
+    { q: "窗台泛水构造的主要作用是：", options: { A: "强化立面分格", B: "防止雨水倒灌和污染墙面", C: "增加窗框刚度", D: "提高采光系数" }, answer: "B" },
+  ],
+  digital_planning: [
+    { q: "在复杂地形场地的数字分析中，最基础的底层数据通常是：", options: { A: "DEM 数字高程模型", B: "渲染贴图", C: "剖面详图", D: "立面分格图" }, answer: "A" },
+    { q: "参数化设计中，几何对象能够随条件同步变化的核心在于建立：", options: { A: "视图关系", B: "参数与约束关系", C: "手绘底图", D: "效果图模板" }, answer: "B" },
+    { q: "建筑日照模拟在方案前期最直接服务于：", options: { A: "汇报风格选择", B: "体量、朝向和间距控制", C: "室内家具布置", D: "结构柱网设计" }, answer: "B" },
+  ],
+  cad: [
+    { q: "CAD 制图中分层管理墙体、轴网、尺寸和文字的主要目的是：", options: { A: "增大文件体积", B: "便于编辑、显示与输出控制", C: "提高渲染质量", D: "替代设计逻辑" }, answer: "B" },
+    { q: "对于重复出现且可能统一修改的构件，最合理的处理方式是：", options: { A: "每次重画", B: "建立块或族对象", C: "直接截图复制", D: "并入文字层" }, answer: "B" },
+    { q: "NURBS 建模相较多边形建模更适合：", options: { A: "精确控制连续曲面", B: "表达结构受力", C: "生成工程造价", D: "统计容积率" }, answer: "A" },
+  ],
+  mechanics: [
+    { q: "建筑力学中，梁主要承受哪类内力组合？", options: { A: "弯矩与剪力", B: "只承受温度", C: "只承受装饰荷载", D: "只承受声学反射" }, answer: "A" },
+    { q: "结构布置中柱网过于随意，最直接的问题通常是：", options: { A: "图面颜色不统一", B: "受力与空间组织混乱", C: "字体不好看", D: "汇报时间变短" }, answer: "B" },
+    { q: "大跨度空间设计时，结构逻辑最需要优先考虑：", options: { A: "贴图分辨率", B: "传力路径", C: "PPT 页数", D: "材料命名" }, answer: "B" },
+  ],
+  representation: [
+    { q: "建筑表现图最重要的作用之一是：", options: { A: "替代方案逻辑", B: "清晰传达空间与氛围", C: "掩盖所有问题", D: "增加文件大小" }, answer: "B" },
+    { q: "分析图如果很漂亮但无法反推设计决策，最大问题是：", options: { A: "缺乏逻辑闭环", B: "颜色不够多", C: "文字太少", D: "页面太空" }, answer: "A" },
+    { q: "在建筑汇报中，效果图最合理的角色是：", options: { A: "补充空间体验", B: "替代平立剖", C: "证明软件很贵", D: "越暗越高级" }, answer: "A" },
+  ],
+  drafting: [
+    { q: "建筑制图中线型区分的核心意义是：", options: { A: "表达构件层级与投影关系", B: "让图纸更花", C: "减少尺寸标注", D: "替代总平面" }, answer: "A" },
+    { q: "平面、立面、剖面之间最基本的要求是：", options: { A: "颜色统一", B: "逻辑与尺寸对应", C: "标题一样长", D: "都放效果图" }, answer: "B" },
+    { q: "轴网在施工图表达中主要服务于：", options: { A: "定位和组织结构构件", B: "装饰页面", C: "替代柱子", D: "降低比例尺" }, answer: "A" },
+  ],
+  presentation: [
+    { q: "建筑汇报中，最应优先讲清楚的是：", options: { A: "设计问题与回应逻辑", B: "软件版本", C: "熬夜时长", D: "字体来源" }, answer: "A" },
+    { q: "被老师追问时，最稳妥的回应方式是：", options: { A: "回到图纸依据", B: "开始背名言", C: "假装没听见", D: "立刻换页" }, answer: "A" },
+    { q: "PPT 在评图中的合理定位是：", options: { A: "组织表达顺序", B: "替代所有图纸", C: "越多越专业", D: "只放氛围图" }, answer: "A" },
+  ],
+  aesthetics: [
+    { q: "建筑美学中的比例控制主要影响：", options: { A: "空间秩序与视觉感受", B: "电脑内存", C: "生活费", D: "课程题数量" }, answer: "A" },
+    { q: "“场所精神”讨论的重点更接近：", options: { A: "地点经验与空间意义", B: "模型胶水品牌", C: "图层命名", D: "考试分数" }, answer: "A" },
+    { q: "材料表达“诚实”通常意味着：", options: { A: "材料逻辑与构造方式一致", B: "全部贴金属", C: "纹理越多越好", D: "隐藏所有节点" }, answer: "A" },
+  ],
+  garden_history: [
+    { q: "中国古典园林常强调的空间体验是：", options: { A: "移步换景", B: "单一轴线到底", C: "完全对称", D: "只看立面" }, answer: "A" },
+    { q: "园林设计中借景的核心是：", options: { A: "把外部景观纳入空间体验", B: "借别人的图", C: "减少植物", D: "替代功能分区" }, answer: "A" },
+    { q: "路径在园林空间中常用于：", options: { A: "组织游览节奏", B: "填满空地", C: "减少景观层次", D: "隐藏入口" }, answer: "A" },
+  ],
+};
+
+export const ACTIONS = [
+  { id: "learn_ai_software", label: "学习AI和设计软件", group: "成长", baseDelta: { energy: -5, pressure: 5, software: 2 }, pressureIncreasing: true, positiveKind: "learning" },
+  { id: "read_exhibition", label: "阅读/展览/讲座", group: "成长", baseDelta: { energy: -4, pressure: -1, money: -100, aesthetic: 2 }, costsMoney: true, positiveKind: "learning" },
+  { id: "design_iteration", label: "方案推敲", group: "课题", baseDelta: { energy: -7, pressure: 7, design: 1, aesthetic: 1 }, progressBase: 1, qualityBase: 11, pressureIncreasing: true, positiveKind: "progress" },
+  { id: "site_research", label: "场地调研", group: "课题", baseDelta: { energy: -8, pressure: -2, money: -200, design: 1, aesthetic: 1, social: 1 }, progressBase: 1, qualityBase: 9, costsMoney: true, positiveKind: "progress" },
+  { id: "normal_drawing", label: "正常速度画图", group: "课题", baseDelta: { energy: -7, pressure: 6, software: 1 }, progressBase: 16, pressureIncreasing: true, positiveKind: "progress" },
+  { id: "crunch_drawing", label: "爆肝通宵赶图", group: "课题", baseDelta: { energy: -18, pressure: 12, software: 1, resilience: 1 }, progressBase: 28, highEnergyCost: true, pressureIncreasing: true, positiveKind: "progress" },
+  { id: "exercise", label: "健身运动", group: "恢复", baseDelta: { energy: -2, pressure: -15, money: -300, resilience: 2 }, costsMoney: true },
+  { id: "socialize", label: "社交聚餐娱乐", group: "恢复", baseDelta: { energy: -2, pressure: -20, money: -700, social: 2 }, costsMoney: true },
+  { id: "rest", label: "休养生息", group: "恢复", baseDelta: { energy: 60, pressure: -10, resilience: 1 } },
+  { id: "outsourcing", label: "接设计外包", group: "金钱", projectType: "outsourcing", maxPerWeek: 2, highEnergyCost: true, pressureIncreasing: true },
+  { id: "part_time", label: "校外兼职", group: "金钱", projectType: "part_time", maxPerWeek: 2, highEnergyCost: true, pressureIncreasing: true },
+  { id: "special_skill", label: "专属技能", group: "角色", specialSkill: true },
+];
+
+export const OUTSOURCING_PROJECTS = [
+  { id: "marker_rendering", name: "钢笔、马克笔代画", text: "甲方交上去拿高分，你的手腕贴了三片膏药。", requirements: [{ design: 38 }, { aesthetic: 38 }], anyRequirement: true, delta: { money: 600, energy: -6, pressure: 4, design: 1, aesthetic: 1, resilience: 1 } },
+  { id: "cad_trace", name: "描CAD底图", text: "把甲方那鬼画符描成CAD，苦命的建筑生！", requirements: [{ software: 42 }], delta: { money: 900, energy: -7, pressure: 5, software: 1, resilience: 1 } },
+  { id: "manual_model", name: "手工模型代做", text: "你赚手工费，赔颈椎和指甲盖。", requirements: [{ design: 42, aesthetic: 40 }], delta: { money: 1300, energy: -10, pressure: 6, design: 1, aesthetic: 1, resilience: 1 } },
+  { id: "simple_su_mass", name: "SU拉体块【简单】", text: "推推拉拉，把方盒子变方案初模。不费脑子，费滚轮。", requirements: [{ software: 45, design: 42 }], delta: { money: 1700, energy: -12, pressure: 7, design: 1, software: 1, resilience: 1 } },
+  { id: "rendering", name: "效果图渲染", text: "理解甲方的审美偏好，并在色彩、光比、配景之间反复调整。", requirements: [{ software: 62, aesthetic: 58, design: 55 }], delta: { money: 3300, energy: -17, pressure: 11, software: 2, aesthetic: 1, resilience: 1 } },
+  { id: "rhino_surface", name: "Rhino曲面建模【精细】", text: "一句想要“扎哈那味儿”，你建到手指抽筋。", requirements: [{ software: 68, design: 60, aesthetic: 58 }], delta: { money: 4800, energy: -21, pressure: 14, software: 2, design: 1, resilience: 2 } },
+  { id: "full_scheme", name: "一条龙方案代工", text: "甲方负责在评图上装深沉，你负责熬夜掉头发。", requirements: [{ design: 78, software: 74, aesthetic: 70, resilience: 65 }], delta: { money: 10000, energy: -34, pressure: 26, design: 2, software: 2, aesthetic: 2, resilience: 3 } },
+];
+
+export const PART_TIME_PROJECTS = [
+  { id: "leaflets", name: "发传单", text: "你对路人微笑到脸僵，他们接了走三步就扔。", delta: { money: 100, pressure: 3, energy: -3 } },
+  { id: "library_assistant", name: "图书馆管理员", text: "你每天把歪七扭八的书扶正，就像在专教整理图纸图层。", delta: { money: 200, pressure: 2, energy: -4 } },
+  { id: "delivery", name: "外卖小哥", text: "少年，你也想黄袍加身吗？", delta: { money: 400, pressure: 5, energy: -5 } },
+  { id: "tutor", name: "家教", text: "你拿着高中数学题研究半天，最后承认自己除了画图什么都不会。", delta: { money: 800, pressure: 7, energy: -7 } },
+];
+
+export const MODEL_MATERIALS = [
+  { id: "hand_cut", name: "手工切割", text: "美工刀、钢尺、切割垫，再加上你的手腕和耐心。", price: 300, delta: { money: -300, quality: 1, aesthetic: 1 }, riskBias: 15 },
+  { id: "laser_cut", name: "激光切割", text: "把精度交给机器，它切出来的构件严丝合缝。", price: 900, delta: { money: -900, quality: 3, progress: 1 }, riskBias: 0 },
+  { id: "print_3d", name: "3D打印", text: "复杂形体的救星，钱包的灾星。", price: 2200, delta: { money: -2200, quality: 5, software: 1 }, riskBias: -15 },
+];
+
+export const FIXED_EVENTS = [
+  {
+    id: "opening_ceremony",
+    title: "开学典礼",
+    body: "开学的新生典礼，你坐在建院报告厅靠走廊的位置，看阳光从高窗斜进来。台上的人说着建筑、理想和远方，你一个字都没听进去，只是在想：我会在这里遇见谁？",
+    options: [
+      { id: "listen", label: "认真听讲", body: "你强打精神记下了几个陌生的词，虽然听不全懂，但至少开始知道自己来到哪里。", delta: { energy: -3, pressure: 2, presentation: 1, design: 1 } },
+      { id: "sleep", label: "太困了，先睡觉", body: "你在掌声里睡了一小会儿，醒来时只记得阳光和那个“欢迎新同学”。", delta: { energy: 4, pressure: -2 } },
+    ],
+  },
+  {
+    id: "military_training",
+    title: "军训",
+    body: "九月的太阳还毒，你站在操场上，帽檐压得很低。休息时有人递过来一瓶水，说“都是一个院的”。你拧开盖子，觉得这大概是大学里第一口甜的。",
+    options: [
+      { id: "model_soldier", label: "我是标兵", body: "你把每个动作都做到位，晒得发懵，但也开始有点相信自己能撑下来。", delta: { energy: -7, pressure: 4, resilience: 2, social: 1 } },
+      { id: "pass", label: "得过且过", body: "你混在人群里少晒一点太阳，没出风头，也没有把自己逼太紧。", delta: { energy: -2, pressure: -2, social: 1 } },
+    ],
+  },
+  {
+    id: "architecture_life_start",
+    title: "大一学年开始",
+    body: "军训结束了。你拖着还有点酸的腿走进建院，专教的灯亮着，楼道里有人抱着图板跑过去。从这一刻起，你正式成为这里的一部分。",
+    options: [{ id: "continue", label: "进入建院生活", body: "选择大一年度课程后，正式进入大一上第 1 周。", delta: {} }],
+  },
+];
+
+export const SUMMER_EVENTS = [
+  {
+    id: "summer_wuyuan_rain",
+    semesterAfter: 2,
+    title: "雨中的理坑小巷",
+    body: "突然下起阵雨，你躲在人家屋檐下，雨水顺着瓦当滴下来，青石板路反着光。",
+    options: [
+      { id: "paint", label: "好好画", body: "你快速用大笔触捕捉雨中的冷色调。", delta: { aesthetic: 1, pressure: 3, energy: -3 } },
+      { id: "play", label: "好好玩", body: "你跑进路边的茶馆避雨，和同学打了一小时牌。", delta: { pressure: -3, energy: -2 } },
+    ],
+  },
+  {
+    id: "summer_wuyuan_deadline",
+    semesterAfter: 2,
+    title: "赶工",
+    body: "实习最后一天，你还差三张作业。其他同学有的已经画完在打包行李。",
+    options: [
+      { id: "paint", label: "好好画", body: "你通宵没睡，硬是把三张水粉赶出来。", delta: { design: 2, aesthetic: 2, pressure: 6, energy: -6 } },
+      { id: "play", label: "好好玩", body: "你索性去逛古街。回学校后补交作业被老师狠狠扣分。", delta: { design: -1, aesthetic: -1, pressure: -4, energy: -2, resilience: 1 } },
+    ],
+  },
+  {
+    id: "summer_hongcun_moon_pond",
+    semesterAfter: 4,
+    title: "月沼",
+    body: "清晨六点的月沼安静得像一张没开封的硫酸纸。你发现最常用的几支马克笔都快没水了。",
+    options: [
+      { id: "paint", label: "好好画", body: "你硬着头皮用仅剩的几支笔，意外画出版画质感。", delta: { design: 1, aesthetic: 1, pressure: 3, energy: -4, resilience: 1 } },
+      { id: "play", label: "好好玩", body: "你跑去吃小馄饨。回来时阳光已经铺满水面。", delta: { design: -1, pressure: -3, energy: -2 } },
+    ],
+  },
+  {
+    id: "summer_hongcun_mountain",
+    semesterAfter: 4,
+    title: "雷岗山",
+    body: "你爬上雷岗山俯瞰宏村全景，马头墙层层叠叠，远山如黛。",
+    options: [
+      { id: "paint", label: "好好画", body: "你快速用宽头笔刷出大色块，再用细笔勾出屋脊线。", delta: { design: 1, aesthetic: 1, pressure: 2, energy: -4 } },
+      { id: "play", label: "好好玩", body: "你在山顶拍了很多自拍，发朋友圈定位“宏村”。", delta: { design: -1, pressure: -3, energy: -2 } },
+    ],
+  },
+  {
+    id: "summer_hongcun_rain_night",
+    semesterAfter: 4,
+    title: "雨夜",
+    body: "最后一天晚上下着雨，你还有两张没画。客栈大厅很吵。",
+    options: [
+      { id: "paint", label: "好好画", body: "你躲进房间，开着台灯，听着雨声画到凌晨三点。", delta: { design: 2, aesthetic: 2, pressure: 6, energy: -6 } },
+      { id: "play", label: "好好玩", body: "你跑去参加同学的告别茶会。", delta: { design: -1, aesthetic: -1, pressure: -5, energy: -2 } },
+    ],
+  },
+];
+
+export const RANDOM_EVENTS = [
+  { id: "forgot_save", title: "忘记保存", body: "保存了，但没完全保存。", pool: "normal", sentiment: "negative", baseWeight: 18, cooldownWeeks: 4, repeatable: true, result: { progress: -5, pressure: 5 } },
+  { id: "layer_management", title: "图层管理", body: "画了一周才发现，所有东西都在默认图层。", pool: "normal", sentiment: "negative", baseWeight: 14, cooldownWeeks: 4, repeatable: true, result: { progress: -4, energy: -2, pressure: 4 } },
+  { id: "headless_fly", title: "无头苍蝇", body: "找参考图找了三个小时，然后忘了自己要设计什么。", pool: "normal", sentiment: "negative", baseWeight: 12, cooldownWeeks: 4, repeatable: true, result: { energy: -5, pressure: 4, progress: -2 } },
+  { id: "windows_update", title: "Windows更新", body: "渲染到99%的时候，系统提示“需要更新，立即重启”。", pool: "normal", sentiment: "negative", baseWeight: 10, cooldownWeeks: 6, repeatable: true, result: { progress: -4, pressure: 5, software: -1 } },
+  { id: "teamwork", title: "小组合作", body: "队友说“我都行”，然后把你方案全改了。", pool: "normal", sentiment: "negative", baseWeight: 12, cooldownWeeks: 4, repeatable: true, result: { quality: -2, pressure: 5 } },
+  { id: "report_crash", title: "汇报翻车", body: "你讲了十分钟动线设计，老师问“那你厕所放哪”。", pool: "normal", sentiment: "negative", baseWeight: 10, cooldownWeeks: 4, repeatable: true, result: { pressure: 5, presentation: -1 } },
+  { id: "cad_crash", title: "CAD又崩溃了", body: "它问你“是否保存恢复文件”，你点了“否”，因为它从来没成功恢复过。", pool: "normal", sentiment: "negative", baseWeight: 14, cooldownWeeks: 4, repeatable: true, result: { progress: -5, pressure: 6, software: -1 } },
+  { id: "hard_drive_bad", title: "硬盘坏了", body: "里面有你三个方案、两个竞赛，和一个不打算重来的青春。", pool: "normal", sentiment: "negative", baseWeight: 8, cooldownWeeks: 8, repeatable: true, result: { progress: -6, pressure: 7, money: -300 } },
+  { id: "cold", title: "感冒", body: "你擤鼻涕的声音比汇报的声音还大。", pool: "normal", sentiment: "negative", baseWeight: 12, cooldownWeeks: 5, repeatable: true, result: { energy: -7, pressure: 3 } },
+  { id: "late_delivery", title: "快递迟到", body: "最需要的材料，偏偏今天不到。", pool: "normal", sentiment: "negative", baseWeight: 10, cooldownWeeks: 4, repeatable: true, result: { progress: -3, pressure: 4 } },
+  { id: "teaching_video", title: "教学视频", body: "收藏了“Rhino从入门到精通”，并认真学习。", pool: "normal", sentiment: "positive", baseWeight: 14, cooldownWeeks: 4, repeatable: true, result: { software: 1, energy: -2 } },
+  { id: "inspiration", title: "灵光乍现", body: "你在洗澡的时候，突然想通了平面的逻辑问题。", pool: "normal", sentiment: "positive", baseWeight: 16, cooldownWeeks: 4, repeatable: true, result: { quality: 2, pressure: -2 } },
+  { id: "best_friend", title: "死党", body: "老朋友突然来消息，问你还活着没。", pool: "normal", sentiment: "positive", baseWeight: 12, cooldownWeeks: 5, repeatable: true, result: { energy: 3, pressure: -3 } },
+  { id: "art_show", title: "美院看展", body: "看完展以后，你突然对设计方案有了新的灵感。", pool: "normal", sentiment: "positive", baseWeight: 10, cooldownWeeks: 6, repeatable: true, result: { aesthetic: 1, quality: 1, money: -50 } },
+  { id: "teacher_praise", title: "意外表扬", body: "老师突然夸了你的方案一句，你能记三天。", pool: "normal", sentiment: "positive", baseWeight: 14, cooldownWeeks: 4, repeatable: true, result: { quality: 1, pressure: -4 } },
+  { id: "senior_notes", title: "学姐的笔记", body: "收二手书，发现学姐已经把书里的重点都标注好了。", pool: "normal", sentiment: "positive", baseWeight: 10, cooldownWeeks: 8, repeatable: false, result: { aesthetic: 1, presentation: 1 } },
+  { id: "desk_note", title: "课桌纸条", body: "你在建院专教的课桌里意外发现一张来自学长的纸条：“当你想放弃的时候，想想当初为什么开始。”", pool: "normal", sentiment: "positive", baseWeight: 6, cooldownWeeks: 999, repeatable: false, result: { energy: 3, pressure: -3 } },
+  { id: "ai_rescue", title: "AI救急", body: "交图前两小时发现少一张剖面，你让AI照着其他剖面风格补了一张，老师没看出来。", pool: "normal", sentiment: "positive", baseWeight: 10, cooldownWeeks: 8, repeatable: false, semesterMin: 2, semesterMax: 6, aiExperienceDelta: 1, result: { progress: 4, software: 1, pressure: 1 } },
+  { id: "ai_trial", title: "AI试错", body: "你让AI跑了二十种立面分割，排除了十几丑的，省了自己一个个画。", pool: "normal", sentiment: "positive", baseWeight: 10, cooldownWeeks: 8, repeatable: false, semesterMin: 2, semesterMax: 6, aiExperienceDelta: 1, result: { quality: 2, software: 1 } },
+  { id: "lightly_holding", title: "轻松绷住", body: "老师否定了上周他帮你改的设计方案，但是你轻松绷住了。", pool: "normal", sentiment: "positive", baseWeight: 0, cooldownWeeks: 999, repeatable: false, semesterMin: 2, semesterMax: 2, result: { resilience: 2, pressure: -2 } },
+  { id: "peer_pressure", title: "同辈压力", body: "同学在朋友圈晒大厂工牌，你还在改第三版作品集。", pool: "normal", sentiment: "negative", baseWeight: 12, cooldownWeeks: 5, repeatable: true, semesterMin: 7, semesterMax: 8, result: { pressure: 6, presentation: -1 } },
+  { id: "old_sketch", title: "旧草图", body: "你无意间翻到大一的草图，线条歪歪扭扭，你盯着看了很久。", pool: "normal", sentiment: "positive", baseWeight: 12, cooldownWeeks: 5, repeatable: true, semesterMin: 9, semesterMax: 10, result: { pressure: -2, aesthetic: 1 } },
+  {
+    id: "red_packet",
+    title: "天降红包",
+    body: "你打开群消息，老师为了犒劳我们发了一个大红包。",
+    pool: "interactive",
+    sentiment: "positive",
+    baseWeight: 10,
+    cooldownWeeks: 8,
+    repeatable: true,
+    options: [
+      { id: "grab", label: "拼手速抢红包", delta: { money: 120, pressure: -1 } },
+      { id: "ignore", label: "继续画图", delta: { progress: 2 } },
+    ],
+  },
+  {
+    id: "computer_blue_screen",
+    title: "电脑蓝屏",
+    body: "直接重启，像开盲盒。",
+    pool: "interactive",
+    sentiment: "negative",
+    baseWeight: 10,
+    cooldownWeeks: 6,
+    repeatable: true,
+    options: [
+      { id: "wait", label: "等它自己恢复", delta: { progress: -2, pressure: 1 } },
+      { id: "force", label: "强制重启", delta: { progress: -5, pressure: 4, software: -1 } },
+    ],
+  },
+  {
+    id: "friend_party",
+    title: "死党聚会",
+    body: "高中死党来你城市了，非要你出来。去吗？",
+    pool: "interactive",
+    sentiment: "neutral",
+    baseWeight: 10,
+    cooldownWeeks: 6,
+    repeatable: true,
+    options: [
+      { id: "go", label: "去，今晚先喘口气", delta: { energy: 4, pressure: -4, money: -80 } },
+      { id: "work", label: "不去，继续赶图", delta: { progress: 3, pressure: 2 } },
+    ],
+  },
+  {
+    id: "late_night_food",
+    title: "深夜外卖",
+    body: "大家都在点烧烤，你肚子也叫了。",
+    pool: "interactive",
+    sentiment: "neutral",
+    baseWeight: 10,
+    cooldownWeeks: 4,
+    repeatable: true,
+    options: [
+      { id: "order", label: "一起点", delta: { energy: 4, money: -50 } },
+      { id: "hold", label: "忍住继续画", delta: { pressure: 1 } },
+    ],
+  },
+  {
+    id: "software_update",
+    title: "软件更新",
+    body: "Rhino 新版本看着很香，但是可能以前的插件不兼容。",
+    pool: "interactive",
+    sentiment: "neutral",
+    baseWeight: 9,
+    cooldownWeeks: 8,
+    repeatable: true,
+    options: [
+      { id: "update", label: "立刻更新", delta: { software: 2, pressure: 2 } },
+      { id: "old", label: "继续用旧版", delta: { progress: 1 } },
+    ],
+  },
+  {
+    id: "cross_exchange",
+    title: "跨界交流",
+    body: "隔壁美院工作坊最近办了一个很有意思的艺术展览。",
+    pool: "interactive",
+    sentiment: "neutral",
+    baseWeight: 9,
+    cooldownWeeks: 6,
+    repeatable: true,
+    options: [
+      { id: "go", label: "去，找灵感", delta: { aesthetic: 2, energy: -2, money: -80 } },
+      { id: "stay", label: "不去，守住进度", delta: { progress: 3, pressure: 1 } },
+    ],
+  },
+  {
+    id: "help_classmate",
+    title: "求助",
+    body: "同学红着眼来求你帮改图，不然他就要挂了。",
+    pool: "interactive",
+    sentiment: "neutral",
+    baseWeight: 9,
+    cooldownWeeks: 6,
+    repeatable: true,
+    options: [
+      { id: "help", label: "帮他一把", delta: { social: 1, energy: -4, pressure: 2 } },
+      { id: "refuse", label: "自身难保", delta: { pressure: 1 } },
+    ],
+  },
+  { id: "model_delivery_early", title: "快递提前", body: "你急等的材料，居然提前送到了。", pool: "model", sentiment: "positive", baseWeight: 18, cooldownWeeks: 4, repeatable: true, result: { quality: 2, pressure: -1 } },
+  { id: "model_argument", title: "诡辩", body: "模型切歪了，你跟老师说“这是有意为之的肌理”。", pool: "model", sentiment: "positive", baseWeight: 14, cooldownWeeks: 4, repeatable: true, result: { quality: 1, presentation: 1, pressure: 2 } },
+  { id: "model_clean_cut", title: "一刀见直", body: "这一刀下去，边线漂亮得不像你。", pool: "model", sentiment: "positive", baseWeight: 14, cooldownWeeks: 4, repeatable: true, result: { quality: 3, energy: -1 } },
+  { id: "model_shared_piece", title: "匀你一块", body: "同学默默分了你一块关键材料。", pool: "model", sentiment: "positive", baseWeight: 14, cooldownWeeks: 4, repeatable: true, result: { quality: 2, money: 100 } },
+  { id: "model_502", title: "502胶水", body: "做模型的过程中，你的食指和中指变成了一根手指。", pool: "model", sentiment: "negative", baseWeight: 18, cooldownWeeks: 4, repeatable: true, result: { quality: -2, pressure: 3, energy: -1 } },
+  { id: "model_expensive_material", title: "贵价材料", body: "买了最贵的模型板，切第一刀就崩了。", pool: "model", sentiment: "negative", baseWeight: 14, cooldownWeeks: 4, repeatable: true, result: { money: -250, quality: -3, pressure: 3 } },
+  { id: "model_material_empty", title: "材料见底", body: "用完了最后一根0.5mm的ABS条，淘宝显示“预计三天后到”。", pool: "model", sentiment: "negative", baseWeight: 14, cooldownWeeks: 4, repeatable: true, result: { money: -180, quality: -2, pressure: 4 } },
+  { id: "model_wrong_scale", title: "比例选错", body: "送去激光切割前，你才发现比例选错了。", pool: "model", sentiment: "negative", baseWeight: 14, cooldownWeeks: 4, repeatable: true, result: { quality: -3, pressure: 4 } },
+  { id: "model_knife_cut", title: "美工刀伤", body: "伤痕，是建筑师的勋章！", pool: "model", sentiment: "negative", baseWeight: 12, cooldownWeeks: 4, repeatable: true, result: { energy: -4, pressure: 2 } },
+  { id: "model_door_hit", title: "模型过门", body: "小心翼翼捧了一路，最后被门框收了过路费。", pool: "model", sentiment: "negative", baseWeight: 14, cooldownWeeks: 4, repeatable: true, result: { quality: -3, pressure: 5, money: -100 } },
+];
+
+export const REPORT_STRATEGIES = [
+  {
+    id: "master_talk",
+    name: "我就是大师",
+    intro: "把方案讲成“静谧与光明”之间的问答。",
+    requirements: { design: 68, aesthetic: 64, presentation: 62 },
+    successRate: 0.9,
+    success: { gradeShift: 1, score: 4, pressure: 3, text: "老师听完沉默了三秒，说你的论述值得写进论文。" },
+    failure: { score: -3, pressure: 6, text: "老师打断你说：“能不能回到平面图？你的卫生间在哪？”" },
+  },
+  {
+    id: "tech_flow",
+    name: "高级技术流",
+    intro: "参数、节点、结构逻辑一顿输出。",
+    requirements: { software: 68, design: 60, presentation: 56 },
+    successRate: 0.7,
+    success: { gradeShift: 1, score: 3, pressure: 2, text: "你演示了从日照分析到立面生成的完整参数化流程。" },
+    failure: { score: -2, pressure: 4, text: "电脑在演示时突然卡住，老师没有看到你说的技术准备。" },
+  },
+  {
+    id: "beg_pass",
+    name: "求求你别挂我",
+    intro: "不装了，摊牌了，这学期的图真的改不完了。",
+    successRate: 0.25,
+    success: { rescueF: true, score: 2, pressure: 8, energy: -4, text: "老师沉默了一会儿，把图纸翻回总图：“把总图重画一遍，我算你及格。”" },
+    failure: { score: -2, pressure: 10, energy: -6, text: "老师说：“我不能因为你可怜就给你过。”" },
+  },
+  {
+    id: "read_ppt",
+    name: "直接念 PPT",
+    intro: "最安全的汇报方式：念 PPT。",
+    successRate: 1,
+    success: { readPpt: true, score: -4, text: "你照着 PPT 念完了，没卡壳也没念错，但也没有什么值得记住。" },
+    failure: { text: "无" },
+  },
+];
+
+export const GRADE_ORDER = ["F", "D", "C", "B", "A", "S"];
+export const GRADE_TO_GPA = { S: 4.0, A: 3.7, B: 3.2, C: 2.4, D: 1.6, F: 0 };
+export const GRADE_SCORE_RANGES = {
+  S: [95, 100],
+  A: [85, 94],
+  B: [75, 84],
+  C: [60, 74],
+  D: [45, 59],
+  F: [0, 44],
+};
+
+export const ENDINGS = {
+  stable_graduation: {
+    title: "稳定毕业——平平淡淡才是真！",
+    body: "你没有保研，没有留学，没有考公上岸，也没有转行。你只是和大多数人一样，把五年的图纸一张张画完。",
+  },
+  wounded_graduation: {
+    title: "带伤毕业——看起来有点糟",
+    body: "学位证拿到手的那一刻很轻，轻得像一张总图。可你知道这五年有多重。",
+  },
+  graduation_failed: {
+    title: "毕业失败——延毕",
+    body: "最后一次设计课评图，你的方案被打了 F。你收拾好专教的抽屉，走进一个未曾设想过的未来。",
+  },
+  living_cost_break: {
+    title: "你破产了——有感觉吗",
+    body: "最先击倒你的不是设计课，是账户余额。",
+  },
+  forced_suspension: {
+    title: "被迫停学——好好休息，同学",
+    body: "你需要停下来，而不是再硬撑一周。",
+  },
+  pressure_collapse: {
+    title: "压力失控——好好休息，同学",
+    body: "连续高压终于压过了你。没有哪张图值得把人整个折进去。",
+  },
+  two_failed_reviews: {
+    title: "连续挂科被劝退——也许你并不适合",
+    body: "第一次挂科，你说是意外；第二次，你没有去专教。",
+  },
+};

@@ -150,9 +150,6 @@
 - `content-plan.md / events.md / endings.md / question-banks.md` 是内容池和展示文本源。
 - 例外：导师阶段任务表的判定条件、奖励和处罚随导师文本维护在 `content-plan.md`，并由 `numbers.md` 明确引用。
 - `technical-architecture.md` 记录技术实现边界与首版验收清单。
-- `decisions.md` 只保留关键决策追溯，不作为现行规则源。
-- `core-questions.md` 只保留核心问题归档；已拍板口径以 `systems.md / numbers.md / technical-architecture.md / 内容文档` 为准。
-- `resume-system-confirmation.md` 若仍存在，只视为历史归档；稳定口径以 `systems.md` 的个人简历章节为准。
 
 ## 冲突处理
 
@@ -162,6 +159,5 @@
 2. `systems.md`
 3. `numbers.md`
 4. 内容文档
-5. `decisions.md`
 
 技术实现冲突以 `technical-architecture.md` 为准，但不得覆盖 `PRD.md / systems.md / numbers.md` 已确定的玩法规则。

@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "web": "node web-app/server.mjs",
     "sim": "node simulator/run.ts",
     "sim:verify": "node simulator/verify.ts",
     "sim:verify:competitions": "node simulator/verify-competitions.ts",
